@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字探险</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game">
+    <h1>文字探险</h1>
+
+    <section class="stats" aria-label="玩家状态">
+      <div class="stat"><span class="label">天数</span><span id="stat-day" class="value">0 / 30</span></div>
+      <div class="stat"><span class="label">生命</span><span id="stat-life" class="value">10 / 10</span></div>
+      <div class="stat"><span class="label">金币</span><span id="stat-coins" class="value">200</span></div>
+      <div class="stat"><span class="label">经验</span><span id="stat-exp" class="value">0</span></div>
+    </section>
+
+    <section id="panel" class="panel" aria-live="polite"></section>
+
+    <section class="log-wrap">
+      <h2>冒险日志</h2>
+      <ol id="log" class="log" reversed></ol>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" hidden>
+    <div id="modal-box" class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title"></h2>
+      <p id="modal-text"></p>
+      <div class="modal-actions">
+        <button id="modal-close">关闭</button>
+        <button id="modal-again" class="primary">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
