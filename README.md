@@ -18,10 +18,4 @@ A small text adventure game that runs in the browser.
 
 ## Background music
 
-- By default the game plays an original epic score synthesized live in the browser by `js/music.js` (D minor: strings, bass, war drums, brass). It needs no audio file and has no copyright issues.
-- Browsers do not allow autoplay, so the music starts on your first click on the page. The button in the top right turns the music on or off, and your choice is remembered.
-- To use a real orchestral recording instead, save a licensed track (CC0 recommended, for example from OpenGameArt or Pixabay Music) as `music/bgm.mp3` and the game will loop it automatically. If the track requires attribution (CC-BY), credit the author and link here.
-
-## Running locally
-
-Browsers cannot read the CSV files when `index.html` is opened straight from disk. Run `python3 -m http.server` in the project folder and open http://localhost:8000, or publish it with GitHub Pages.
+- From https://opengameart.org/content/new-sunrise （CC0 Public Domain）
