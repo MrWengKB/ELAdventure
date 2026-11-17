@@ -1,4 +1,4 @@
-/* 文字探险 —— 游戏逻辑 */
+/* Text Adventure: game logic */
 (function () {
   "use strict";
 
@@ -6,9 +6,9 @@
   const START_COINS = 200;
   const MAX_DAYS = 30;
 
-  // ---------- 纯逻辑（可单独测试） ----------
+  // ---------- Pure logic (testable on its own) ----------
 
-  /** 解析 CSV 文本（支持 BOM、引号、逗号转义），返回对象数组 */
+  /** Parse CSV text (handles BOM, quotes and escaped commas) into an array of objects */
   function parseCSV(text) {
     text = text.replace(/^﻿/, "");
     const rows = [];
@@ -49,10 +49,10 @@
   }
 
   /**
-   * 把事件应用到状态上，返回新状态和实际变化量。
-   * - life: 数字为增减，"full" 为回满；不超过上限，不低于 0
-   * - coins: 可为负（负债）
-   * - exp: 只增不减（负数视为 0）
+   * Apply an event to the state; returns the new state and the actual changes.
+   * - life: a number is a change, "full" restores to max; never above max or below 0
+   * - coins: may go negative (debt)
+   * - exp: only increases (negative values count as 0)
    */
   function applyEvent(state, event) {
     const s = Object.assign({}, state);
@@ -71,7 +71,7 @@
     };
   }
 
-  /** 开启新的一天并结算事件 */
+  /** Start a new day and resolve its event */
   function advanceDay(state, event) {
     const { state: s, delta } = applyEvent(Object.assign({}, state, { day: state.day + 1 }), event);
     if (s.life <= 0) { s.over = true; s.won = false; }
@@ -80,21 +80,21 @@
   }
 
   /**
-   * 连续答错惩罚（streak 为本次答错后的连错次数）：
-   * 1 题不罚；2 题扣 10 金币；3 题扣 1 生命；4 题直接失败。
+   * Penalty for consecutive wrong answers (streak = wrong answers in a row, including this one):
+   * 1: no penalty; 2: lose 10 coins; 3: lose 1 life; 4: game over.
    */
   function applyWrongAnswer(state, streak) {
     const s = Object.assign({}, state);
     let penalty = "";
     if (streak === 2) {
       s.coins -= 10;
-      penalty = "连续答错 2 题，扣除 10 枚金币。";
+      penalty = "2 wrong answers in a row: you lose 10 coins.";
     } else if (streak === 3) {
       s.life = Math.max(0, s.life - 1);
-      penalty = "连续答错 3 题，扣除 1 点生命。";
+      penalty = "3 wrong answers in a row: you lose 1 life.";
     } else if (streak >= 4) {
       s.over = true; s.won = false;
-      penalty = "连续答错 4 题，冒险到此结束。";
+      penalty = "4 wrong answers in a row: your adventure ends here.";
     }
     if (s.life <= 0) { s.over = true; s.won = false; }
     return { state: s, penalty };
@@ -109,7 +109,7 @@
     return a;
   }
 
-  /** 随机取一个元素，尽量避免与上一次相同 */
+  /** Pick a random element, avoiding a repeat of the last one when possible */
   function pickRandom(list, last) {
     if (list.length <= 1) return list[0];
     let item;
@@ -124,7 +124,7 @@
   }
   if (typeof document === "undefined") return;
 
-  // ---------- 界面 ----------
+  // ---------- UI ----------
 
   const $ = id => document.getElementById(id);
   const panel = $("panel");
@@ -163,8 +163,8 @@
 
   function showStart() {
     panel.replaceChildren(
-      el("p", null, "欢迎来到文字探险！你有 10 点生命、200 枚金币。每开启新的一天都要先答对一道题，然后迎接当天的随机事件。坚持 30 天并活下来就能通关。"),
-      el("button", { class: "primary", onclick: askQuestion }, "开启第 1 天")
+      el("p", null, "Welcome to Text Adventure! You start with 10 life and 200 coins. To begin each new day you must answer a question correctly, then face that day's random event. Survive 30 days to win."),
+      el("button", { class: "primary", onclick: askQuestion }, "Start Day 1")
     );
   }
 
@@ -177,7 +177,7 @@
       box.appendChild(el("button", { onclick: () => answer(q, opt, box) }, opt));
     });
     panel.replaceChildren(
-      el("p", null, `想要开启第 ${state.day + 1} 天，请先回答问题：`),
+      el("p", null, `To start Day ${state.day + 1}, answer this question first:`),
       el("p", { class: "question" }, q.Question),
       box
     );
@@ -193,24 +193,24 @@
 
     if (chosen === q.Answer) {
       wrongStreak = 0;
-      panel.appendChild(el("p", { class: "result-good" }, "回答正确！新的一天开始了。"));
-      panel.appendChild(el("button", { class: "primary", onclick: startDay }, "继续"));
+      panel.appendChild(el("p", { class: "result-good" }, "Correct! A new day begins."));
+      panel.appendChild(el("button", { class: "primary", onclick: startDay }, "Continue"));
     } else {
       wrongStreak++;
       const result = applyWrongAnswer(state, wrongStreak);
       state = result.state;
       renderStats();
-      panel.appendChild(el("p", { class: "result-bad" }, `回答错误，正确答案是：${q.Answer}。`));
+      panel.appendChild(el("p", { class: "result-bad" }, `Wrong. The correct answer is: ${q.Answer}.`));
       if (result.penalty) {
         panel.appendChild(el("p", { class: "result-bad" }, result.penalty));
-        addLog(`第 ${state.day + 1} 天前：${result.penalty}`);
+        addLog(`Before Day ${state.day + 1}: ${result.penalty}`);
       } else {
-        panel.appendChild(el("p", { class: "changes" }, "这次不罚，但连续答错会有惩罚哦。"));
+        panel.appendChild(el("p", { class: "changes" }, "No penalty this time, but wrong answers in a row will cost you."));
       }
       if (state.over) {
-        lose(state.life <= 0 ? "你的生命耗尽了……" : "你连续答错了 4 道题……");
+        lose(state.life <= 0 ? "You ran out of life... " : "You got 4 questions wrong in a row... ");
       } else {
-        panel.appendChild(el("button", { class: "primary", onclick: askQuestion }, "换一道题"));
+        panel.appendChild(el("button", { class: "primary", onclick: askQuestion }, "Try another question"));
       }
     }
   }
@@ -223,41 +223,41 @@
     renderStats();
 
     const d = result.delta;
-    const lifeText = String(ev.life).trim().toLowerCase() === "full" ? `生命回满(${signed(d.life)})` : `生命 ${signed(d.life)}`;
-    const changes = `${lifeText}，金币 ${signed(d.coins)}，经验 ${signed(d.exp)}`;
-    addLog(`第 ${state.day} 天：${ev.event}（${changes}）`);
+    const lifeText = String(ev.life).trim().toLowerCase() === "full" ? `Life fully restored (${signed(d.life)})` : `Life ${signed(d.life)}`;
+    const changes = `${lifeText}, Coins ${signed(d.coins)}, EXP ${signed(d.exp)}`;
+    addLog(`Day ${state.day}: ${ev.event} (${changes})`);
 
     const nodes = [
-      el("p", null, `第 ${state.day} 天`),
+      el("p", null, `Day ${state.day}`),
       el("p", { class: "question" }, ev.event),
       el("p", { class: "changes" }, changes),
     ];
 
     if (!state.over) {
-      nodes.push(el("button", { class: "primary", onclick: askQuestion }, `开启第 ${state.day + 1} 天`));
+      nodes.push(el("button", { class: "primary", onclick: askQuestion }, `Start Day ${state.day + 1}`));
     }
     panel.replaceChildren(...nodes);
     if (state.over && state.won) win();
-    else if (state.over) lose("你的生命耗尽了……");
+    else if (state.over) lose("You ran out of life... ");
   }
 
   function finalStats() {
-    return `生命 ${state.life}，金币 ${state.coins}，经验 ${state.exp}`;
+    return `Life ${state.life}, Coins ${state.coins}, EXP ${state.exp}`;
   }
 
   function win() {
-    addLog("成功通关！");
-    endGame(true, "🎉 恭喜通关！", `你成功度过了 ${MAX_DAYS} 天！最终：${finalStats()}。`);
+    addLog("You won!");
+    endGame(true, "🎉 Congratulations, you won!", `You survived all ${MAX_DAYS} days! Final: ${finalStats()}.`);
   }
 
   function lose(reason) {
-    addLog("游戏失败。");
-    endGame(false, "游戏结束", `${reason}你坚持了 ${state.day} 天。最终：${finalStats()}。`);
+    addLog("Game over.");
+    endGame(false, "Game Over", `${reason}You lasted ${state.day} days. Final: ${finalStats()}.`);
   }
 
-  /** 游戏结束：面板留一个重开按钮，并弹出需手动关闭的弹窗 */
+  /** Game over: leave a restart button in the panel and show a modal the player closes manually */
   function endGame(won, title, text) {
-    panel.appendChild(el("button", { class: "primary", onclick: restart }, "再来一局"));
+    panel.appendChild(el("button", { class: "primary", onclick: restart }, "Play Again"));
     showModal(won, title, text);
   }
 
@@ -292,15 +292,15 @@
 
   async function init() {
     renderStats();
-    panel.replaceChildren(el("p", null, "正在加载题目和事件……"));
+    panel.replaceChildren(el("p", null, "Loading questions and events..."));
     try {
       [questions, events] = await Promise.all([loadCSV("questions.csv"), loadCSV("event.csv")]);
-      if (!questions.length || !events.length) throw new Error("questions.csv 或 event.csv 为空");
+      if (!questions.length || !events.length) throw new Error("questions.csv or event.csv is empty");
       showStart();
     } catch (err) {
       panel.replaceChildren(
-        el("p", { class: "result-bad" }, "无法加载 questions.csv / event.csv。"),
-        el("p", null, "浏览器直接打开本地文件时无法读取 CSV，请在项目目录运行 `python3 -m http.server` 后访问 http://localhost:8000，或使用 GitHub Pages。"),
+        el("p", { class: "result-bad" }, "Could not load questions.csv / event.csv."),
+        el("p", null, "Browsers cannot read the CSV files when the page is opened straight from disk. Run `python3 -m http.server` in the project folder and open http://localhost:8000, or use GitHub Pages."),
         el("p", { class: "changes" }, String(err))
       );
     }

@@ -1,16 +1,16 @@
-﻿SN,event,life,coins,exp
-1,你正在欣赏美丽的森林风光，突然一条毒蛇咬住了你！,-1,0,0
-2,走在旷野中，你感受到了大自然的爱。,2,0,10
-3,你走在草地里，不小心被一个藏宝箱绊倒了。,-1,100,5
-4,国王的骑士找到了你，要和你决斗，你给了他一点钱，他就走开了。,0,-10,0
-5,国王的骑士找到了你，要和你决斗，你无法说不，结果被骑士刺伤了。,-1,0,5
-6,一群强盗看上了你的钱包，决定谋财又害命。,-2,-20,0
-7,国王很欣赏你，邀请你参加了一场宴会，还送给你很多珠宝。,full,200,10
-8,国王很欣赏你，送给你很多珠宝，还邀请你参加了一场宴会，结果你消化不良。,-1,200,10
-9,那是什么？！这么美丽的蘑菇！糟糕，有毒！,-1,0,5
-10,你在森林里受了点伤，不得不花钱请医生来治疗。,0,-30,5
-11,你找到了一枚硬币，看起来有点脏。,0,1,1
-12,刚才还风和日丽的，下一秒就大雨倾盆，结果你被淋湿，感冒了。,-1,0,0
-13,刚才还风和日丽的，下一秒就大雨倾盆，你不得不花钱找马车载你回家。,0,-25,5
-14,你阅读了一本古代的魔法书，获得了神奇的力量。,full,0,10
-15,你从一块石头中拔出了一把宝剑，周围的人都叫你亚瑟。,0,0,30
+SN,event,life,coins,exp
+1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-1,0,0
+2,"Walking across the open wilds, you feel the love of nature.",2,0,10
+3,"Walking through the meadow, you trip over a treasure chest.",-1,100,5
+4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0
+5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-1,0,5
+6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-2,-20,0
+7,"The king admires you, invites you to a banquet, and gives you a pile of jewels.",full,200,10
+8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-1,200,10
+9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-1,0,5
+10,"You get slightly hurt in the forest and have to pay a doctor to treat you.",0,-30,5
+11,"You find a coin. It looks a bit dirty.",0,1,1
+12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-1,0,0
+13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5
+14,"You read an ancient book of magic and gain mysterious powers.",full,0,10
+15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30

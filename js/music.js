@@ -1,8 +1,8 @@
 /*
- * 史诗背景音乐
- * - 如果存在 music/bgm.mp3，则循环播放该文件（可自行放入任何有授权的音乐）。
- * - 否则使用 Web Audio 实时合成的原创配乐（D 小调，弦乐铺底 + 低音 + 战鼓 + 铜管旋律），无版权问题。
- * 浏览器禁止自动播放，所以在玩家第一次点击页面时开始播放。
+ * Epic background music
+ * - If music/bgm.mp3 exists, it is looped (drop in any properly licensed track).
+ * - Otherwise an original score is synthesized live with Web Audio (D minor: string pad + bass + war drums + brass melody), so there are no copyright issues.
+ * Browsers block autoplay, so playback starts on the player's first click.
  */
 (function () {
   "use strict";
@@ -12,7 +12,7 @@
   const BEAT = 60 / BPM;
   const BAR = BEAT * 4;
 
-  // 每小节一个和弦（MIDI 音高），共 8 小节循环
+  // One chord per bar (MIDI pitches), looping over 8 bars
   const CHORDS = [
     [50, 53, 57], // Dm
     [46, 50, 53], // Bb
@@ -23,7 +23,7 @@
     [43, 46, 50], // Gm
     [45, 49, 52], // A
   ];
-  // 铜管旋律：[小节内起始拍, 音高, 拍数]，按小节排列；第二遍循环才出现
+  // Brass melody: [start beat in bar, pitch, beats], grouped by bar; only enters on the second pass
   const MELODY = [
     [[0, 62, 1.5], [1.5, 65, 0.5], [2, 69, 2]],
     [[0, 70, 2], [2, 69, 1], [3, 65, 1]],
@@ -34,13 +34,13 @@
     [[0, 70, 1], [1, 69, 1], [2, 67, 1], [3, 70, 1]],
     [[0, 69, 3], [3, 61, 1]],
   ];
-  // 战鼓：小节内的拍位置和力度
+  // War drums: beat positions within the bar and velocity
   const DRUMS = [[0, 1], [1.5, 0.6], [2, 0.9], [3, 0.6], [3.5, 0.8]];
 
   const midiToFreq = m => 440 * Math.pow(2, (m - 69) / 12);
 
   let muted = false;
-  try { muted = localStorage.getItem(STORAGE_KEY) === "1"; } catch (e) { /* 忽略 */ }
+  try { muted = localStorage.getItem(STORAGE_KEY) === "1"; } catch (e) { /* ignore */ }
 
   let started = false;
   let mode = null;        // "file" | "synth"
@@ -48,7 +48,7 @@
   let ctx = null, master = null, reverb = null, timer = null;
   let nextBarTime = 0, barIndex = 0;
 
-  // ---------- 合成器 ----------
+  // ---------- Synthesizers ----------
 
   function makeReverb() {
     const len = ctx.sampleRate * 3;
@@ -70,7 +70,7 @@
     send.connect(reverb);
   }
 
-  // 弦乐铺底：三个失谐的锯齿波 + 低通，缓起缓收
+  // String pad: three detuned sawtooth waves + low-pass, slow attack and release
   function pad(freq, t, dur, vol) {
     const g = ctx.createGain();
     const f = ctx.createBiquadFilter();
@@ -87,7 +87,7 @@
     f.connect(g); out(g, 0.5);
   }
 
-  // 低音八分音符固定音型
+  // Bass ostinato in eighth notes
   function bass(freq, t, dur, vol) {
     const o = ctx.createOscillator();
     const f = ctx.createBiquadFilter();
@@ -100,7 +100,7 @@
     o.start(t); o.stop(t + dur + 0.05);
   }
 
-  // 战鼓：正弦下滑 + 噪声击打
+  // War drum: falling sine + noise hit
   function drum(t, vel) {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
@@ -125,7 +125,7 @@
     n.start(t);
   }
 
-  // 铜管：锯齿 + 方波，滤波器随起音打开
+  // Brass: sawtooth + square, filter opens with the attack
   function brass(freq, t, dur, vol) {
     const g = ctx.createGain();
     const f = ctx.createBiquadFilter();
@@ -158,7 +158,7 @@
     }
     DRUMS.forEach(([beat, vel]) => drum(t + beat * BEAT, vel));
     if (bar === CHORDS.length - 1) {
-      [3.25, 3.5, 3.75].forEach(b => drum(t + b * BEAT, 0.7)); // 过门
+      [3.25, 3.5, 3.75].forEach(b => drum(t + b * BEAT, 0.7)); // fill
     }
     if (loop % 2 === 1) {
       MELODY[bar].forEach(([beat, m, len]) => brass(midiToFreq(m), t + beat * BEAT, len * BEAT, 0.06));
@@ -188,7 +188,7 @@
     timer = setInterval(scheduler, 200);
   }
 
-  // ---------- 播放控制 ----------
+  // ---------- Playback control ----------
 
   function applyMute() {
     if (mode === "file" && audioEl) {
@@ -199,7 +199,7 @@
     }
     const btn = document.getElementById("music-toggle");
     if (btn) {
-      btn.textContent = muted ? "🔇 音乐：关" : "🔊 音乐：开";
+      btn.textContent = muted ? "🔇 Music: Off" : "🔊 Music: On";
       btn.setAttribute("aria-pressed", String(!muted));
     }
   }
@@ -208,7 +208,7 @@
     try {
       const res = await fetch("music/bgm.mp3", { method: "HEAD" });
       if (res.ok) return "file";
-    } catch (e) { /* 没有音乐文件 */ }
+    } catch (e) { /* no music file */ }
     return "synth";
   }
 
@@ -230,7 +230,7 @@
 
   function toggle() {
     muted = !muted;
-    try { localStorage.setItem(STORAGE_KEY, muted ? "1" : "0"); } catch (e) { /* 忽略 */ }
+    try { localStorage.setItem(STORAGE_KEY, muted ? "1" : "0"); } catch (e) { /* ignore */ }
     if (!started) { if (!muted) start(); else applyMute(); return; }
     applyMute();
   }
@@ -241,7 +241,7 @@
     applyMute();
   });
 
-  // 第一次点击页面时开始播放（浏览器不允许自动播放）
+  // Start playing on the first click (browsers do not allow autoplay)
   document.addEventListener("pointerdown", function first(e) {
     if (e.target && e.target.id === "music-toggle") return;
     document.removeEventListener("pointerdown", first, true);
