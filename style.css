@@ -30,7 +30,7 @@ h2 { font-size: 1.1rem; margin: 0 0 8px; color: var(--muted); }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   margin-bottom: 16px;
 }
@@ -95,7 +95,7 @@ button.primary:hover { background: #6f4720; }
 .log li { margin-bottom: 6px; }
 
 @media (max-width: 480px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stats { grid-template-columns: repeat(3, 1fr); }
 }
 
 .modal {
@@ -138,4 +138,19 @@ button.primary:hover { background: #6f4720; }
 }
 @media (max-width: 480px) {
   .music-toggle { position: static; display: block; margin: 0 auto 12px; }
+}
+
+.shop {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.shop-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.shop-item { text-align: center; font-size: 0.95rem; }
+.shop-item:disabled { opacity: 0.45; }
+.shop-msg { margin: 8px 0 0; min-height: 1.2em; color: var(--muted); }
+@media (max-width: 480px) {
+  .shop-items { grid-template-columns: repeat(2, 1fr); }
 }

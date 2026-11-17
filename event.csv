@@ -1,16 +1,16 @@
-SN,event,life,coins,exp
-1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-1,0,0
-2,"Walking across the open wilds, you feel the love of nature.",2,0,10
-3,"Walking through the meadow, you trip over a treasure chest.",-1,100,5
-4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0
-5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-1,0,5
-6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-2,-20,0
-7,"The king admires you, invites you to a banquet, and gives you a pile of jewels.",full,200,10
-8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-1,200,10
-9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-1,0,5
-10,"You get slightly hurt in the forest and have to pay a doctor to treat you.",0,-30,5
-11,"You find a coin. It looks a bit dirty.",0,1,1
-12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-1,0,0
-13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5
-14,"You read an ancient book of magic and gain mysterious powers.",full,0,10
-15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30
+SN,event,life,coins,exp,defense,maxlife
+1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-15,0,0,-5,0
+2,"Walking across the open wilds, you feel the love of nature.",20,0,10,10,10
+3,"Walking through the meadow, you trip over a treasure chest.",-10,100,5,0,0
+4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0,0,0
+5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-15,0,5,0,0
+6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-20,-20,0,0,0
+7,"The king admires you, invites you to a banquet, and gives you a pile of jewels.",full,200,10,0,0
+8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-10,200,10,-5,0
+9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-15,0,5,-5,0
+10,"You get slightly hurt in the forest and have to pay a doctor to treat you.",0,-30,5,0,0
+11,"You find a coin. It looks a bit dirty.",0,1,1,0,0
+12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-10,0,0,-5,0
+13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5,0,0
+14,"You read an ancient book of magic and gain mysterious powers.",full,0,10,20,20
+15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30,10,0

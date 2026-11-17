@@ -2,7 +2,8 @@
 (function () {
   "use strict";
 
-  const MAX_LIFE = 10;
+  const START_MAX_LIFE = 100;
+  const START_DEFENSE = 10;
   const START_COINS = 200;
   const MAX_DAYS = 30;
 
@@ -45,29 +46,63 @@
   }
 
   function createState() {
-    return { day: 0, life: MAX_LIFE, coins: START_COINS, exp: 0, over: false, won: false };
+    return {
+      day: 0, life: START_MAX_LIFE, maxLife: START_MAX_LIFE, defense: START_DEFENSE,
+      coins: START_COINS, exp: 0, over: false, won: false,
+    };
+  }
+
+  /** Turn a CSV value into an integer; blank or non-numeric counts as 0 */
+  function num(v) {
+    const n = parseInt(String(v ?? "").trim(), 10);
+    return isNaN(n) ? 0 : n;
   }
 
   /**
-   * Apply an event to the state; returns the new state and the actual changes.
-   * - life: a number is a change, "full" restores to max; never above max or below 0
-   * - coins: may go negative (debt)
-   * - exp: only increases (negative values count as 0)
+   * Change max life (mutates s):
+   * - at full life: still full after the change;
+   * - not at full life: no healing; life is only lowered if it is above the new max.
+   */
+  function changeMaxLife(s, d) {
+    if (!d) return;
+    const wasFull = s.life >= s.maxLife;
+    s.maxLife = Math.max(1, s.maxLife + d);
+    s.life = wasFull ? s.maxLife : Math.min(s.life, s.maxLife);
+  }
+
+  /**
+   * Apply an event to the state; returns the new state and the actual changes. Resolved in order:
+   * 1. life: a number is a change, "full" restores to max; a negative value has defense added first
+   *    (down to 0 at most, never turning into healing); never above max or below 0
+   * 2. coins: may go negative (debt); exp: only increases (negative values count as 0)
+   * 3. maxlife: change to max life, see changeMaxLife
+   * 4. defense: change to defense, never below 0
    */
   function applyEvent(state, event) {
     const s = Object.assign({}, state);
-    const lifeRaw = String(event.life ?? "0").trim().toLowerCase();
+    const lifeRaw = String(event.life ?? "").trim().toLowerCase();
+    let blocked = 0;
     if (lifeRaw === "full") {
-      s.life = MAX_LIFE;
+      s.life = s.maxLife;
     } else {
-      const d = parseInt(lifeRaw, 10) || 0;
-      s.life = Math.min(MAX_LIFE, Math.max(0, s.life + d));
+      let d = num(lifeRaw);
+      if (d < 0) {
+        const reduced = Math.min(0, d + s.defense);
+        blocked = reduced - d;
+        d = reduced;
+      }
+      s.life = Math.min(s.maxLife, Math.max(0, s.life + d));
     }
-    s.coins += parseInt(event.coins, 10) || 0;
-    s.exp += Math.max(0, parseInt(event.exp, 10) || 0);
+    s.coins += num(event.coins);
+    s.exp += Math.max(0, num(event.exp));
+    changeMaxLife(s, num(event.maxlife));
+    s.defense = Math.max(0, s.defense + num(event.defense));
     return {
       state: s,
-      delta: { life: s.life - state.life, coins: s.coins - state.coins, exp: s.exp - state.exp },
+      delta: {
+        life: s.life - state.life, maxLife: s.maxLife - state.maxLife, defense: s.defense - state.defense,
+        coins: s.coins - state.coins, exp: s.exp - state.exp, blocked,
+      },
     };
   }
 
@@ -81,7 +116,7 @@
 
   /**
    * Penalty for consecutive wrong answers (streak = wrong answers in a row, including this one):
-   * 1: no penalty; 2: lose 10 coins; 3: lose 1 life; 4: game over.
+   * 1: no penalty; 2: lose 10 coins; 3: lose 10 life (not reduced by defense); 4: game over.
    */
   function applyWrongAnswer(state, streak) {
     const s = Object.assign({}, state);
@@ -90,14 +125,39 @@
       s.coins -= 10;
       penalty = "2 wrong answers in a row: you lose 10 coins.";
     } else if (streak === 3) {
-      s.life = Math.max(0, s.life - 1);
-      penalty = "3 wrong answers in a row: you lose 1 life.";
+      s.life = Math.max(0, s.life - 10);
+      penalty = "3 wrong answers in a row: you lose 10 life.";
     } else if (streak >= 4) {
       s.over = true; s.won = false;
       penalty = "4 wrong answers in a row: your adventure ends here.";
     }
     if (s.life <= 0) { s.over = true; s.won = false; }
     return { state: s, penalty };
+  }
+
+  /** Shop items */
+  const SHOP_ITEMS = [
+    { id: "def5", type: "defense", amount: 5, price: 100 },
+    { id: "def10", type: "defense", amount: 10, price: 180 },
+    { id: "def15", type: "defense", amount: 15, price: 270 },
+    { id: "life10", type: "life", amount: 10, price: 100 },
+    { id: "life20", type: "life", amount: 20, price: 180 },
+    { id: "life30", type: "life", amount: 30, price: 270 },
+  ];
+
+  /**
+   * Buy an item. Only while the game is running and life is above 0; you need enough coins (no buying on debt);
+   * bought life never goes above max life, and life cannot be bought at full life.
+   */
+  function buyItem(state, item) {
+    if (state.over || state.life <= 0) return { ok: false, state, reason: "You cannot buy anything at 0 life." };
+    if (state.coins < item.price) return { ok: false, state, reason: "Not enough coins." };
+    if (item.type === "life" && state.life >= state.maxLife) return { ok: false, state, reason: "Your life is already full." };
+    const s = Object.assign({}, state);
+    s.coins -= item.price;
+    if (item.type === "defense") s.defense += item.amount;
+    else s.life = Math.min(s.maxLife, s.life + item.amount);
+    return { ok: true, state: s, gained: item.type === "defense" ? s.defense - state.defense : s.life - state.life };
   }
 
   function shuffle(arr) {
@@ -117,7 +177,10 @@
     return item;
   }
 
-  const Logic = { MAX_LIFE, START_COINS, MAX_DAYS, parseCSV, createState, applyEvent, advanceDay, applyWrongAnswer, shuffle, pickRandom };
+  const Logic = {
+    START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
+    parseCSV, createState, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+  };
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = Logic;
@@ -151,10 +214,46 @@
 
   function renderStats() {
     $("stat-day").textContent = `${state.day} / ${MAX_DAYS}`;
-    $("stat-life").textContent = `${state.life} / ${MAX_LIFE}`;
+    $("stat-life").textContent = `${state.life} / ${state.maxLife}`;
+    $("stat-defense").textContent = state.defense;
     $("stat-coins").textContent = state.coins;
     $("stat-coins").classList.toggle("negative", state.coins < 0);
     $("stat-exp").textContent = state.exp;
+    renderShop();
+  }
+
+  // ---------- Shop ----------
+
+  let shopMsg = "";
+
+  function itemLabel(item) {
+    return `${item.type === "defense" ? "Defense" : "Life"} +${item.amount} (${item.price} coins)`;
+  }
+
+  function renderShop() {
+    const box = $("shop-items");
+    if (!box) return;
+    box.replaceChildren(...SHOP_ITEMS.map(item => {
+      const disabled = state.over || state.life <= 0 || state.coins < item.price ||
+        (item.type === "life" && state.life >= state.maxLife);
+      const b = el("button", { class: "shop-item " + item.type, onclick: () => buy(item) }, itemLabel(item));
+      b.disabled = disabled;
+      return b;
+    }));
+    $("shop-msg").textContent = shopMsg;
+  }
+
+  function buy(item) {
+    const r = buyItem(state, item);
+    if (!r.ok) {
+      shopMsg = r.reason;
+    } else {
+      state = r.state;
+      const what = item.type === "defense" ? "Defense" : "Life";
+      shopMsg = `Bought: ${what} +${r.gained} for ${item.price} coins.`;
+      addLog(`Shop: ${what} +${r.gained} (-${item.price} coins)`);
+    }
+    renderStats();
   }
 
   function addLog(text) {
@@ -163,7 +262,7 @@
 
   function showStart() {
     panel.replaceChildren(
-      el("p", null, "Welcome to Text Adventure! You start with 10 life and 200 coins. To begin each new day you must answer a question correctly, then face that day's random event. Survive 30 days to win."),
+      el("p", null, `Welcome to Text Adventure! You start with ${START_MAX_LIFE} life, ${START_DEFENSE} defense and ${START_COINS} coins. Defense blocks some of the damage you take. To begin each new day you must answer a question correctly, then face that day's random event. You can spend coins in the shop below at any time to buy defense and life. Survive ${MAX_DAYS} days to win.`),
       el("button", { class: "primary", onclick: askQuestion }, "Start Day 1")
     );
   }
@@ -224,7 +323,12 @@
 
     const d = result.delta;
     const lifeText = String(ev.life).trim().toLowerCase() === "full" ? `Life fully restored (${signed(d.life)})` : `Life ${signed(d.life)}`;
-    const changes = `${lifeText}, Coins ${signed(d.coins)}, EXP ${signed(d.exp)}`;
+    const parts = [lifeText];
+    if (d.blocked > 0) parts.push(`Defense blocked ${d.blocked} damage`);
+    parts.push(`Coins ${signed(d.coins)}`, `EXP ${signed(d.exp)}`);
+    if (d.maxLife) parts.push(`Max life ${signed(d.maxLife)}`);
+    if (d.defense) parts.push(`Defense ${signed(d.defense)}`);
+    const changes = parts.join(", ");
     addLog(`Day ${state.day}: ${ev.event} (${changes})`);
 
     const nodes = [
@@ -242,7 +346,7 @@
   }
 
   function finalStats() {
-    return `Life ${state.life}, Coins ${state.coins}, EXP ${state.exp}`;
+    return `Life ${state.life}/${state.maxLife}, Defense ${state.defense}, Coins ${state.coins}, EXP ${state.exp}`;
   }
 
   function win() {
@@ -279,6 +383,7 @@
     state = createState();
     lastQuestion = lastEvent = null;
     wrongStreak = 0;
+    shopMsg = "";
     log.replaceChildren();
     renderStats();
     showStart();
