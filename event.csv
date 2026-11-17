@@ -14,3 +14,9 @@ SN,event,life,coins,exp,defense,maxlife
 13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5,0,0
 14,"You read an ancient book of magic and gain mysterious powers.",full,0,10,20,20
 15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30,10,0
+16,"You wake up to find your coat and gear gone, and your purse empty too.",0,set 0,0,set 5,0
+17,"A gang of bandits comes after you. To save your life, you throw them your purse.",0,set 0,0,0,0
+18,"You lose your footing and fall off a cliff. Luckily you grab a vine and survive, but your gear is badly damaged.",set 10,0,0,set 10,0
+19,"You run into an evil witch, who casts a wicked spell on you.",set 80,0,0,set 0,set 80
+20,"A genie in a lamp asks whether you choose wealth or health. Without a moment's hesitation, you choose wealth.",set 90,500,0,set 0,set 100
+21,"A genie in a lamp asks whether you choose wealth or health. After some thought, you choose health.",full,set 10,0,0,20
