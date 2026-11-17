@@ -126,3 +126,16 @@ button.primary:hover { background: #6f4720; }
 .modal-box h2 { font-size: 1.5rem; margin: 0 0 12px; }
 .modal-actions { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
 .modal-actions button { text-align: center; min-width: 110px; }
+
+.top { position: relative; }
+.music-toggle {
+  position: absolute;
+  right: 0;
+  top: 4px;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .music-toggle { position: static; display: block; margin: 0 auto 12px; }
+}

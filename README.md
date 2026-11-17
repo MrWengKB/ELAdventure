@@ -15,3 +15,9 @@
 
 - `questions.csv`：`Question,Answer,Distractor1,Distractor2,Distractor3`
 - `event.csv`：`SN,event,life,coins,exp`
+
+## 背景音乐
+
+- 默认使用 `js/music.js` 在浏览器里实时合成的原创史诗配乐（D 小调，弦乐、低音、战鼓、铜管），不需要音频文件，也没有版权问题。
+- 浏览器不允许自动播放，所以第一次点击页面时音乐才会开始。右上角按钮可以开关音乐，选择会被记住。
+- 想换成真正的管弦乐录音：把一首有授权的音乐（推荐 CC0，例如 OpenGameArt、Pixabay Music 上的曲子）保存为 `music/bgm.mp3`，游戏会自动循环播放它。若曲子要求署名（CC-BY），请在这里注明作者和链接。

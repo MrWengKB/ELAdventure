@@ -8,7 +8,10 @@
 </head>
 <body>
   <main class="game">
-    <h1>文字探险</h1>
+    <header class="top">
+      <h1>文字探险</h1>
+      <button id="music-toggle" class="music-toggle" aria-pressed="true">🔊 音乐：开</button>
+    </header>
 
     <section class="stats" aria-label="玩家状态">
       <div class="stat"><span class="label">天数</span><span id="stat-day" class="value">0 / 30</span></div>
@@ -36,6 +39,7 @@
     </div>
   </div>
 
+  <script src="js/music.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
