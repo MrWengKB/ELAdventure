@@ -12,6 +12,7 @@ A small text adventure game that runs in the browser.
   2. Coins can go negative (debt); EXP only goes up.
   3. Max life (`maxlife`): at full life you stay at full life after the change; otherwise there is no healing, and life is only lowered if it is above the new max (90/100 with max +10 becomes 90/110; max -15 becomes 85/85).
   4. Defense (`defense`): goes up or down, never below 0.
+  - `life`, `coins`, `maxlife` and `defense` also accept `set N` (for example `set 10`): the value becomes N only if it is currently greater than N, otherwise it stays the same (it never heals you or gives you coins). A life set is not reduced by defense; a max life set adjusts life using rule 3 above. EXP does not support set.
 - Shop: buy at any time with coins. Defense +5 / +10 / +15 costs 100 / 180 / 270 coins; life +10 / +20 / +30 costs 100 / 180 / 270 coins. You can only buy while life is above 0, and you need enough coins (no buying on debt). Bought life never goes above max life, and you cannot buy life at full life.
 - At 0 life you lose; survive all 30 days with life above 0 and you win. Winning or losing shows a popup that you close yourself or dismiss with "Play Again".
 

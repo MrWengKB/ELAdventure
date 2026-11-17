@@ -63,6 +63,20 @@
    * - at full life: still full after the change;
    * - not at full life: no healing; life is only lowered if it is above the new max.
    */
+  /**
+   * Parse the "set N" syntax (any case, space optional, e.g. "set 10", "SET10"); returns N, or null if it is not a set value.
+   */
+  function setTarget(v) {
+    const m = /^set\s*(-?\d+)$/i.exec(String(v ?? "").trim());
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  /** Lower to N only if the current value is greater; otherwise unchanged */
+  function capTo(current, v) {
+    const t = setTarget(v);
+    return t !== null && current > t ? t : current;
+  }
+
   function changeMaxLife(s, d) {
     if (!d) return;
     const wasFull = s.life >= s.maxLife;
@@ -77,6 +91,8 @@
    * 2. coins: may go negative (debt); exp: only increases (negative values count as 0)
    * 3. maxlife: change to max life, see changeMaxLife
    * 4. defense: change to defense, never below 0
+   * life, coins, maxlife and defense also accept "set N": the value becomes N only if it is currently greater than N.
+   * A life set is not reduced by defense; a max life set adjusts life using the changeMaxLife rules.
    */
   function applyEvent(state, event) {
     const s = Object.assign({}, state);
@@ -84,6 +100,8 @@
     let blocked = 0;
     if (lifeRaw === "full") {
       s.life = s.maxLife;
+    } else if (setTarget(lifeRaw) !== null) {
+      s.life = Math.max(0, capTo(s.life, lifeRaw));
     } else {
       let d = num(lifeRaw);
       if (d < 0) {
@@ -93,10 +111,13 @@
       }
       s.life = Math.min(s.maxLife, Math.max(0, s.life + d));
     }
-    s.coins += num(event.coins);
+    if (setTarget(event.coins) !== null) s.coins = capTo(s.coins, event.coins);
+    else s.coins += num(event.coins);
     s.exp += Math.max(0, num(event.exp));
-    changeMaxLife(s, num(event.maxlife));
-    s.defense = Math.max(0, s.defense + num(event.defense));
+    if (setTarget(event.maxlife) !== null) changeMaxLife(s, capTo(s.maxLife, event.maxlife) - s.maxLife);
+    else changeMaxLife(s, num(event.maxlife));
+    if (setTarget(event.defense) !== null) s.defense = Math.max(0, capTo(s.defense, event.defense));
+    else s.defense = Math.max(0, s.defense + num(event.defense));
     return {
       state: s,
       delta: {
@@ -179,7 +200,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
-    parseCSV, createState, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, createState, setTarget, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
