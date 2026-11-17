@@ -19,3 +19,4 @@ A small text adventure game that runs in the browser.
 ## Background music
 
 - From https://opengameart.org/content/new-sunrise （CC0 Public Domain）
+- The music tries to start automatically when the page opens. Most browsers block autoplay with sound; in that case it starts on the first interaction of any kind (click, touch or key press). The button in the top right turns music on or off.

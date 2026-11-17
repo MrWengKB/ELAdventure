@@ -2,7 +2,7 @@
  * Epic background music
  * - If music/bgm.mp3 exists, it is looped (drop in any properly licensed track).
  * - Otherwise an original score is synthesized live with Web Audio (D minor: string pad + bass + war drums + brass melody), so there are no copyright issues.
- * Browsers block autoplay, so playback starts on the player's first click.
+ * Tries to autoplay on page load; if the browser blocks autoplay, playback starts on the player's first interaction of any kind (click, touch or key press).
  */
 (function () {
   "use strict";
@@ -42,7 +42,6 @@
   let muted = false;
   try { muted = localStorage.getItem(STORAGE_KEY) === "1"; } catch (e) { /* ignore */ }
 
-  let started = false;
   let mode = null;        // "file" | "synth"
   let audioEl = null;
   let ctx = null, master = null, reverb = null, timer = null;
@@ -190,13 +189,9 @@
 
   // ---------- Playback control ----------
 
-  function applyMute() {
-    if (mode === "file" && audioEl) {
-      if (muted) audioEl.pause(); else audioEl.play().catch(() => {});
-    } else if (mode === "synth" && ctx) {
-      if (muted) ctx.suspend(); else ctx.resume();
-      master.gain.value = muted ? 0 : 0.6;
-    }
+  const INTERACTION_EVENTS = ["pointerdown", "touchstart", "keydown", "click"];
+
+  function updateButton() {
     const btn = document.getElementById("music-toggle");
     if (btn) {
       btn.textContent = muted ? "🔇 Music: Off" : "🔊 Music: On";
@@ -212,41 +207,70 @@
     return "synth";
   }
 
-  const modeReady = detectMode().then(m => { mode = m; });
-
-  async function start() {
-    if (started) return;
-    started = true;
-    await modeReady;
+  const modeReady = detectMode().then(m => {
+    mode = m;
     if (mode === "file") {
       audioEl = new Audio("music/bgm.mp3");
       audioEl.loop = true;
       audioEl.volume = 0.5;
-    } else {
-      startSynth();
+      audioEl.preload = "auto";
     }
-    applyMute();
+  });
+
+  function isPlaying() {
+    if (mode === "file") return !!audioEl && !audioEl.paused;
+    return !!ctx && ctx.state === "running";
+  }
+
+  /** Try to play; resolves true if playing, false if the browser blocked it */
+  function play() {
+    if (muted) return Promise.resolve(false);
+    if (!mode) return modeReady.then(play);
+    if (mode === "file") {
+      return audioEl.play().then(() => true, () => false);
+    }
+    if (!ctx) startSynth();
+    if (!ctx) return Promise.resolve(false);
+    master.gain.value = 0.6;
+    const resumed = ctx.resume().catch(() => {});
+    const wait = new Promise(r => setTimeout(r, 300));
+    return Promise.race([resumed, wait]).then(() => ctx.state === "running");
+  }
+
+  function pause() {
+    if (audioEl) audioEl.pause();
+    if (ctx) ctx.suspend();
+  }
+
+  function removeInteractionListeners() {
+    INTERACTION_EVENTS.forEach(t => document.removeEventListener(t, onInteraction, true));
+  }
+
+  // The first interaction of any kind (click, touch or key press) starts playback
+  function onInteraction(e) {
+    if (e.target && e.target.id === "music-toggle") return;
+    if (muted) return;
+    if (isPlaying()) { removeInteractionListeners(); return; }
+    play().then(ok => { if (ok) removeInteractionListeners(); });
   }
 
   function toggle() {
     muted = !muted;
     try { localStorage.setItem(STORAGE_KEY, muted ? "1" : "0"); } catch (e) { /* ignore */ }
-    if (!started) { if (!muted) start(); else applyMute(); return; }
-    applyMute();
+    updateButton();
+    if (muted) pause();
+    else play().then(ok => { if (ok) removeInteractionListeners(); });
   }
+
+  INTERACTION_EVENTS.forEach(t => document.addEventListener(t, onInteraction, true));
 
   document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("music-toggle");
     if (btn) btn.addEventListener("click", e => { e.stopPropagation(); toggle(); });
-    applyMute();
+    updateButton();
+    // Try to play as soon as the page loads; if the browser blocks it, wait for the first interaction
+    play().then(ok => { if (ok) removeInteractionListeners(); });
   });
 
-  // Start playing on the first click (browsers do not allow autoplay)
-  document.addEventListener("pointerdown", function first(e) {
-    if (e.target && e.target.id === "music-toggle") return;
-    document.removeEventListener("pointerdown", first, true);
-    if (!muted) start();
-  }, true);
-
-  window.CLAMusic = { start, toggle, isMuted: () => muted };
+  window.CLAMusic = { play, toggle, isPlaying, isMuted: () => muted };
 })();
