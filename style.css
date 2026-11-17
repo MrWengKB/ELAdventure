@@ -154,3 +154,4 @@ button.primary:hover { background: #6f4720; }
 @media (max-width: 480px) {
   .shop-items { grid-template-columns: repeat(2, 1fr); }
 }
+.panel .warning { color: #b26a00; font-weight: bold; }

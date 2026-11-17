@@ -324,8 +324,11 @@
       if (result.penalty) {
         panel.appendChild(el("p", { class: "result-bad" }, result.penalty));
         addLog(`Before Day ${state.day + 1}: ${result.penalty}`);
-      } else {
-        panel.appendChild(el("p", { class: "changes" }, "No penalty this time, but wrong answers in a row will cost you."));
+      }
+      // Warn what the next wrong answer will cost
+      const warnings = { 1: "No penalty this time. ⚠️ One more wrong answer will cost you 10 coins.", 2: "⚠️ One more wrong answer will cost you 10 life.", 3: "⚠️ One more wrong answer and the game is over!" };
+      if (!state.over && warnings[wrongStreak]) {
+        panel.appendChild(el("p", { class: "warning" }, warnings[wrongStreak]));
       }
       if (state.over) {
         lose(state.life <= 0 ? "You ran out of life... " : "You got 4 questions wrong in a row... ");
