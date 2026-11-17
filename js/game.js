@@ -1,4 +1,4 @@
-/* Text Adventure: game logic */
+/* 30 Days of Adventure: game logic */
 (function () {
   "use strict";
 
@@ -283,7 +283,7 @@
 
   function showStart() {
     panel.replaceChildren(
-      el("p", null, `Welcome to Text Adventure! You start with ${START_MAX_LIFE} life, ${START_DEFENSE} defense and ${START_COINS} coins. Defense blocks some of the damage you take. To begin each new day you must answer a question correctly, then face that day's random event. You can spend coins in the shop below at any time to buy defense and life. Survive ${MAX_DAYS} days to win.`),
+      el("p", null, `Welcome to 30 Days of Adventure! You start with ${START_MAX_LIFE} life, ${START_DEFENSE} defense and ${START_COINS} coins. Defense blocks some of the damage you take. To begin each new day you must answer a question correctly, then face that day's random event. You can spend coins in the shop below at any time to buy defense and life. Survive ${MAX_DAYS} days to win.`),
       el("button", { class: "primary", onclick: askQuestion }, "Start Day 1")
     );
   }

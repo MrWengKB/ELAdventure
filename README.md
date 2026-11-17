@@ -1,4 +1,4 @@
-# Text Adventure
+# 30 Days of Adventure
 
 A small text adventure game that runs in the browser.
 

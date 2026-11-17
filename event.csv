@@ -1,6 +1,6 @@
 SN,event,life,coins,exp,defense,maxlife
 1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-15,0,0,-5,0
-2,"Walking across the open wilds, you feel the love of nature.",20,0,10,10,10
+2,"Walking across the open wilds, you feel the love of nature.",full,0,10,10,10
 3,"Walking through the meadow, you trip over a treasure chest.",-10,100,5,0,0
 4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0,0,0
 5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-15,0,5,0,0
