@@ -1,23 +1,27 @@
-# 文字探险
+# Text Adventure
 
-一个在浏览器中运行的文字冒险小游戏。
+A small text adventure game that runs in the browser.
 
-## 规则
+## Rules
 
-- 初始：生命 10（上限 10）、金币 200、经验 0。
-- 每开启新的一天，需要答对一道随机问题（`questions.csv`，四选一，选项顺序随机）。答错会显示正确答案并换一道题重试。
-- 连续答错惩罚（答对即清零）：错 1 题不罚；连错 2 题扣 10 金币；连错 3 题再扣 1 点生命；连错 4 题直接失败。
-- 新的一天触发一个随机事件（`event.csv`），数值为增减量；`full` 表示回满生命。
-- 生命不超过上限、不低于 0；金币可以为负（负债）；经验只增不减。
-- 生命为 0 则游戏失败；坚持满 30 天且生命大于 0 则通关。通关或失败都会弹窗提示，需手动关闭或点“再来一局”。
+- Start: 10 life (max 10), 200 coins, 0 EXP.
+- To start each new day you must answer a random question correctly (`questions.csv`, multiple choice with 4 options in random order). A wrong answer shows the correct one and gives you a different question to try.
+- Penalty for wrong answers in a row (reset by a correct answer): 1 wrong, no penalty; 2 in a row, lose 10 coins; 3 in a row, lose 1 more life; 4 in a row, game over.
+- Each new day triggers a random event (`event.csv`). Its values are changes (plus or minus); `full` means life is fully restored.
+- Life never goes above the max or below 0; coins can go negative (debt); EXP only goes up.
+- At 0 life you lose; survive all 30 days with life above 0 and you win. Winning or losing shows a popup that you close yourself or dismiss with "Play Again".
 
-## 数据文件
+## Data files
 
-- `questions.csv`：`Question,Answer,Distractor1,Distractor2,Distractor3`
-- `event.csv`：`SN,event,life,coins,exp`
+- `questions.csv`: `Question,Answer,Distractor1,Distractor2,Distractor3`
+- `event.csv`: `SN,event,life,coins,exp`
 
-## 背景音乐
+## Background music
 
-- 默认使用 `js/music.js` 在浏览器里实时合成的原创史诗配乐（D 小调，弦乐、低音、战鼓、铜管），不需要音频文件，也没有版权问题。
-- 浏览器不允许自动播放，所以第一次点击页面时音乐才会开始。右上角按钮可以开关音乐，选择会被记住。
-- 想换成真正的管弦乐录音：把一首有授权的音乐（推荐 CC0，例如 OpenGameArt、Pixabay Music 上的曲子）保存为 `music/bgm.mp3`，游戏会自动循环播放它。若曲子要求署名（CC-BY），请在这里注明作者和链接。
+- By default the game plays an original epic score synthesized live in the browser by `js/music.js` (D minor: strings, bass, war drums, brass). It needs no audio file and has no copyright issues.
+- Browsers do not allow autoplay, so the music starts on your first click on the page. The button in the top right turns the music on or off, and your choice is remembered.
+- To use a real orchestral recording instead, save a licensed track (CC0 recommended, for example from OpenGameArt or Pixabay Music) as `music/bgm.mp3` and the game will loop it automatically. If the track requires attribution (CC-BY), credit the author and link here.
+
+## Running locally
+
+Browsers cannot read the CSV files when `index.html` is opened straight from disk. Run `python3 -m http.server` in the project folder and open http://localhost:8000, or publish it with GitHub Pages.

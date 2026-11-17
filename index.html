@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文字探险</title>
+  <title>Text Adventure</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="game">
     <header class="top">
-      <h1>文字探险</h1>
-      <button id="music-toggle" class="music-toggle" aria-pressed="true">🔊 音乐：开</button>
+      <h1>Text Adventure</h1>
+      <button id="music-toggle" class="music-toggle" aria-pressed="true">🔊 Music: On</button>
     </header>
 
-    <section class="stats" aria-label="玩家状态">
-      <div class="stat"><span class="label">天数</span><span id="stat-day" class="value">0 / 30</span></div>
-      <div class="stat"><span class="label">生命</span><span id="stat-life" class="value">10 / 10</span></div>
-      <div class="stat"><span class="label">金币</span><span id="stat-coins" class="value">200</span></div>
-      <div class="stat"><span class="label">经验</span><span id="stat-exp" class="value">0</span></div>
+    <section class="stats" aria-label="Player stats">
+      <div class="stat"><span class="label">Day</span><span id="stat-day" class="value">0 / 30</span></div>
+      <div class="stat"><span class="label">Life</span><span id="stat-life" class="value">10 / 10</span></div>
+      <div class="stat"><span class="label">Coins</span><span id="stat-coins" class="value">200</span></div>
+      <div class="stat"><span class="label">EXP</span><span id="stat-exp" class="value">0</span></div>
     </section>
 
     <section id="panel" class="panel" aria-live="polite"></section>
 
     <section class="log-wrap">
-      <h2>冒险日志</h2>
+      <h2>Adventure Log</h2>
       <ol id="log" class="log" reversed></ol>
     </section>
   </main>
@@ -33,8 +33,8 @@
       <h2 id="modal-title"></h2>
       <p id="modal-text"></p>
       <div class="modal-actions">
-        <button id="modal-close">关闭</button>
-        <button id="modal-again" class="primary">再来一局</button>
+        <button id="modal-close">Close</button>
+        <button id="modal-again" class="primary">Play Again</button>
       </div>
     </div>
   </div>
