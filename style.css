@@ -203,3 +203,33 @@ button.primary:hover { background: #6f4720; }
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .fmt-table code { font-size: 0.95rem; }
+
+/* ---------- Publish homework ---------- */
+.hw-mode #btn-format, .hw-mode #btn-import, .hw-mode #btn-publish { display: none; }
+.hw-mode .qbank-info { color: var(--accent); font-weight: bold; }
+.publish-box {
+  max-width: 480px; text-align: left; max-height: 90vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.publish-box h2 { text-align: center; color: var(--accent); margin: 0; }
+.publish-box .modal-actions { margin-top: 4px; }
+.hw-text { margin: 0; font-size: 0.95rem; }
+.hw-muted { color: var(--muted); }
+.hw-err { color: var(--bad); font-weight: bold; }
+.hw-err:empty { display: none; }
+.hw-field { display: flex; flex-direction: column; gap: 4px; font-weight: bold; }
+.hw-input {
+  font: inherit; font-weight: normal; width: 100%; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text);
+}
+.hw-link { font-size: 0.8rem; }
+.hw-result { display: flex; flex-direction: column; gap: 10px; }
+.hw-result[hidden], .hw-row[hidden] { display: none; }
+.hw-row { display: flex; gap: 8px; }
+.hw-row .btn { flex: 1; text-align: center; }
+a.btn {
+  font: inherit; border-radius: 8px; border: 1px solid var(--accent); padding: 10px 14px;
+  background: #fff; color: var(--text); text-decoration: none; display: inline-block;
+}
+a.btn:hover { background: #f3e8d8; }
+.hw-qr { width: 240px; max-width: 100%; height: auto; align-self: center; border-radius: 10px; image-rendering: pixelated; border: 1px solid var(--border); }

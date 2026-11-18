@@ -16,6 +16,7 @@
     <div class="toolbar">
       <button id="btn-format">📋 Question format</button>
       <button id="btn-import">📂 Import questions</button>
+      <button id="btn-publish">📤 Publish homework</button>
       <input type="file" id="file-input" accept=".csv,text/csv" hidden>
       <span id="qbank-info" class="qbank-info"></span>
     </div>
@@ -83,9 +84,16 @@ How many months are in a year?,12,10,11,13</pre>
     </div>
   </div>
 
+  <div id="publish-modal" class="modal" hidden>
+    <div id="publish-box" class="modal-box publish-box" role="dialog" aria-modal="true"></div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="js/music.js"></script>
+  <script src="js/vendor/qrcode.js"></script>
+  <script src="js/vendor/tiny-inflate.js"></script>
+  <script src="js/homework.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
