@@ -111,6 +111,15 @@
     return t !== null && current > t ? t : current;
   }
 
+  /** Returns "double" / "half" / "nodebt" (any case), or null */
+  function special(v) {
+    const t = String(v ?? "").trim().toLowerCase();
+    return t === "double" || t === "half" || t === "nodebt" ? t : null;
+  }
+
+  /** Halve, rounding odd numbers up (no 0.5) */
+  function halve(n) { return Math.ceil(n / 2); }
+
   function changeMaxLife(s, d) {
     if (!d) return;
     const wasFull = s.life >= s.maxLife;
@@ -127,6 +136,11 @@
    * 4. defense: change to defense, never below 0
    * life, coins, maxlife and defense also accept "set N": the value becomes N only if it is currently greater than N.
    * A life set is not reduced by defense; a max life set adjusts life using the changeMaxLife rules.
+   * They also accept double / half (halving rounds odd numbers up):
+   * - life: doubling never goes above max life; halving is not reduced by defense
+   * - maxlife: adjusts life using the changeMaxLife rules; defense: simply doubled / halved
+   * - coins: when negative, double counts as nodebt and half has no effect
+   * coins also accept nodebt: negative coins become 0 (debt cleared); otherwise it counts as +30.
    */
   function applyEvent(state, event) {
     const s = Object.assign({}, state);
@@ -134,6 +148,10 @@
     let blocked = 0;
     if (lifeRaw === "full") {
       s.life = s.maxLife;
+    } else if (lifeRaw === "double") {
+      s.life = Math.min(s.maxLife, s.life * 2);
+    } else if (lifeRaw === "half") {
+      s.life = halve(s.life);
     } else if (setTarget(lifeRaw) !== null) {
       s.life = Math.max(0, capTo(s.life, lifeRaw));
     } else {
@@ -145,12 +163,25 @@
       }
       s.life = Math.min(s.maxLife, Math.max(0, s.life + d));
     }
-    if (setTarget(event.coins) !== null) s.coins = capTo(s.coins, event.coins);
+    const coinOp = special(event.coins);
+    if (coinOp) {
+      if (s.coins < 0) {
+        if (coinOp !== "half") s.coins = 0; // nodebt / double: debt cleared
+      } else if (coinOp === "nodebt") s.coins += 30;
+      else if (coinOp === "double") s.coins *= 2;
+      else s.coins = halve(s.coins);
+    } else if (setTarget(event.coins) !== null) s.coins = capTo(s.coins, event.coins);
     else s.coins += num(event.coins);
     s.exp += Math.max(0, num(event.exp));
-    if (setTarget(event.maxlife) !== null) changeMaxLife(s, capTo(s.maxLife, event.maxlife) - s.maxLife);
+    const maxOp = special(event.maxlife);
+    if (maxOp === "double") changeMaxLife(s, s.maxLife);
+    else if (maxOp === "half") changeMaxLife(s, halve(s.maxLife) - s.maxLife);
+    else if (setTarget(event.maxlife) !== null) changeMaxLife(s, capTo(s.maxLife, event.maxlife) - s.maxLife);
     else changeMaxLife(s, num(event.maxlife));
-    if (setTarget(event.defense) !== null) s.defense = Math.max(0, capTo(s.defense, event.defense));
+    const defOp = special(event.defense);
+    if (defOp === "double") s.defense *= 2;
+    else if (defOp === "half") s.defense = halve(s.defense);
+    else if (setTarget(event.defense) !== null) s.defense = Math.max(0, capTo(s.defense, event.defense));
     else s.defense = Math.max(0, s.defense + num(event.defense));
     return {
       state: s,
@@ -234,7 +265,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
-    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
@@ -383,7 +414,8 @@
     renderStats();
 
     const d = result.delta;
-    const lifeText = String(ev.life).trim().toLowerCase() === "full" ? `Life fully restored (${signed(d.life)})` : `Life ${signed(d.life)}`;
+    const lifeLabel = { full: "Life fully restored", double: "Life doubled", half: "Life halved" }[String(ev.life).trim().toLowerCase()];
+    const lifeText = lifeLabel ? `${lifeLabel} (${signed(d.life)})` : `Life ${signed(d.life)}`;
     const parts = [lifeText];
     if (d.blocked > 0) parts.push(`Defense blocked ${d.blocked} damage`);
     parts.push(`Coins ${signed(d.coins)}`, `EXP ${signed(d.exp)}`);

@@ -20,3 +20,13 @@ SN,event,life,coins,exp,defense,maxlife
 19,"You run into an evil witch, who casts a wicked spell on you.",set 80,0,0,set 0,set 80
 20,"A genie in a lamp asks whether you choose wealth or health. Without a moment's hesitation, you choose wealth.",set 90,500,0,set 0,set 100
 21,"A genie in a lamp asks whether you choose wealth or health. After some thought, you choose health.",full,set 10,0,0,20
+22,"You pass an ancient ruin, and a mysterious power surges into your body.",full,0,0,double,double
+23,"You pass an ancient ruin and suddenly feel an ominous shiver run through your body.",half,0,0,half,-30
+24,"An aged knight who can no longer ride into battle gives you all his valuable gear.",0,0,0,double,0
+25,"You climb a tall tower and gaze into the distance, and suddenly everything feels clear.",full,0,0,30,0
+26,"You save an old wizard. Deeply grateful, he casts a spell on your purse.",0,double,0,0,0
+27,"A hare starts talking and asks you for money. You are so stunned that it can talk that, before you know it, your purse has been emptied.",0,set 0,0,0,0
+28,"In the forest you meet an immortal who asks you some strange questions, then vanishes before you can answer.",0,nodebt,0,10,0
+29,"You see a hare running very fast and, refusing to be outdone, chase after it. Unsurprisingly, something goes wrong.",half,0,0,set 10,-20
+30,"You solve an easy case for the king, and he decides to give you a small reward.",0,nodebt,0,0,0
+31,"You solve a very tricky case for the king, and he decides to give you a big reward.",0,double,0,0,0
