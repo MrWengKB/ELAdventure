@@ -301,6 +301,12 @@
 
   function signed(n) { return (n > 0 ? "+" : "") + n; }
 
+  /** Wrap signed numbers in colored spans: positive green, negative red (0 has no sign and stays plain) */
+  function colorize(text) {
+    return text.split(/([+-]\d+)/).filter(Boolean).map(part =>
+      /^[+-]\d+$/.test(part) ? el("span", { class: part[0] === "+" ? "num-pos" : "num-neg" }, part) : document.createTextNode(part));
+  }
+
   function renderStats() {
     $("stat-day").textContent = `${state.day} / ${MAX_DAYS}`;
     $("stat-life").textContent = `${state.life} / ${state.maxLife}`;
@@ -345,8 +351,10 @@
     renderStats();
   }
 
-  function addLog(text) {
-    log.insertBefore(el("li", null, text), log.firstChild);
+  function addLog(...parts) {
+    const li = el("li");
+    li.append(...parts);
+    log.insertBefore(li, log.firstChild);
   }
 
   function showStart() {
@@ -422,12 +430,12 @@
     if (d.maxLife) parts.push(`Max life ${signed(d.maxLife)}`);
     if (d.defense) parts.push(`Defense ${signed(d.defense)}`);
     const changes = parts.join(", ");
-    addLog(`Day ${state.day}: ${ev.event} (${changes})`);
+    addLog(`Day ${state.day}: ${ev.event} (`, ...colorize(changes), ")");
 
     const nodes = [
       el("p", null, `Day ${state.day}`),
       el("p", { class: "question" }, ev.event),
-      el("p", { class: "changes" }, changes),
+      (() => { const c = el("p", { class: "changes" }); c.append(...colorize(changes)); return c; })(),
     ];
 
     if (!state.over) {
