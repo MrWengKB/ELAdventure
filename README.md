@@ -22,6 +22,15 @@ A small text adventure game that runs in the browser.
 - Click "📂 Import questions" to pick your own CSV file. The imported set replaces the default one from the next question on. Reloading the page restores the default `questions.csv`.
 - Format: one question per row, 5 columns `Question,Answer,Distractor1,Distractor2,Distractor3`; the header row is optional; UTF-8 and GBK encodings both work, so you can save straight from Excel or Google Sheets as CSV.
 
+## Publishing homework (no scores recorded)
+
+- Choose the question set first (the default one, or your own CSV via "📂 Import questions"), click "📤 Publish homework", enter a title and click "Create homework link".
+- You get a link and a QR code: copy the link, or download / print the QR code. Students scan it with a tablet or phone.
+- Students play with exactly that question set. The homework title is shown at the top, and the format / import / publish buttons are hidden, so they cannot change the questions.
+- No server, Google Sheet or Apps Script is needed: the questions are compressed into the link after `#hw=`. No names or scores are recorded.
+- When you publish the default set, the link only says "use the default questions", so it stays short; if you later edit `questions.csv`, old links use the new questions too.
+- A QR code has limited room: about 30 Chinese questions or about 50 short English questions. With more, the link still works but there is no QR code.
+
 ## Data files
 
 - `questions.csv`: `Question,Answer,Distractor1,Distractor2,Distractor3`

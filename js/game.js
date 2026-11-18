@@ -250,6 +250,8 @@
 
   let questions = [];
   let questionSource = "questions.csv";
+  let isDefaultBank = true; // still the bundled questions.csv, nothing imported
+  let homework = null;      // opened from a homework link: { title, questions }
   let events = [];
   let state = createState();
   let lastQuestion = null;
@@ -459,7 +461,9 @@
   }
 
   function renderQuestionInfo() {
-    $("qbank-info").textContent = `Question set: ${questionSource} (${questions.length} questions)`;
+    $("qbank-info").textContent = homework
+      ? `📘 Homework: ${homework.title} (${questions.length} questions)`
+      : `Question set: ${questionSource} (${questions.length} questions)`;
   }
 
   $("btn-import").addEventListener("click", () => $("file-input").click());
@@ -473,6 +477,7 @@
     if (!n) { toast("❌ No questions found. Please check the CSV format (see 📋 Question format)."); return; }
     questions = parsed;
     questionSource = file.name;
+    isDefaultBank = false;
     lastQuestion = null;
     renderQuestionInfo();
     toast(`✅ Imported "${file.name}": ${n} questions`);
@@ -493,6 +498,18 @@
     toast("Blank template downloaded");
   });
 
+  // ---------- Publish homework (no scores recorded) ----------
+  const toRow = q => [q.Question, q.Answer, q.Distractor1, q.Distractor2, q.Distractor3];
+  const fromRow = r => ({ Question: r[0], Answer: r[1], Distractor1: r[2], Distractor2: r[3], Distractor3: r[4] });
+
+  $("btn-publish").addEventListener("click", () => {
+    $("publish-modal").hidden = false;
+    Homework.renderPublish($("publish-box"), {
+      questions: questions.map(toRow), source: questionSource, isDefault: isDefaultBank,
+      onClose: () => { $("publish-modal").hidden = true; },
+    });
+  });
+
   async function loadCSV(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
@@ -500,14 +517,22 @@
   }
 
   async function init() {
+    // Homework link: use the questions in the link (or the default set); students cannot change them
+    homework = Homework.fromLocation();
+    if (homework && homework.error) { toast(homework.message); homework = null; }
+    if (homework) {
+      document.body.classList.add("hw-mode");
+      document.title = `${homework.title} · ${document.title}`;
+    }
+    const hwQuestions = homework && homework.questions;
     renderStats();
     panel.replaceChildren(el("p", null, "Loading questions and events..."));
     try {
       const [qBuf, evs] = await Promise.all([
-        fetch("questions.csv").then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`questions.csv: HTTP ${r.status}`)))),
+        hwQuestions ? null : fetch("questions.csv").then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`questions.csv: HTTP ${r.status}`)))),
         loadCSV("event.csv"),
       ]);
-      questions = parseQuestions(decodeText(qBuf));
+      questions = hwQuestions ? hwQuestions.map(fromRow) : parseQuestions(decodeText(qBuf));
       events = evs;
       renderQuestionInfo();
       if (!questions.length || !events.length) throw new Error("questions.csv or event.csv is empty");
