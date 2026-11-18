@@ -9,8 +9,8 @@
 
   // ---------- Pure logic (testable on its own) ----------
 
-  /** Parse CSV text (handles BOM, quotes and escaped commas) into an array of objects */
-  function parseCSV(text) {
+  /** Parse CSV text into rows of fields (handles BOM, quotes, escaped commas, CRLF) */
+  function parseRows(text) {
     text = text.replace(/^﻿/, "");
     const rows = [];
     let row = [];
@@ -35,6 +35,12 @@
     }
     if (field !== "" || row.length) { row.push(field); rows.push(row); }
 
+    return rows;
+  }
+
+  /** Parse CSV text with a header row into an array of objects */
+  function parseCSV(text) {
+    const rows = parseRows(text);
     const nonEmpty = rows.filter(r => r.some(f => f.trim() !== ""));
     if (!nonEmpty.length) return [];
     const header = nonEmpty[0].map(h => h.trim());
@@ -43,6 +49,34 @@
       header.forEach((h, idx) => { obj[h] = (r[idx] || "").trim(); });
       return obj;
     });
+  }
+
+  /**
+   * Parse a question-set CSV: 5 columns per row (question, answer, distractor 1, 2, 3).
+   * Columns are read by position; a header row (first cell "Question" or "题干") is skipped;
+   * rows with fewer than 5 columns or an empty cell are skipped;
+   * if a row has no ASCII commas, the Chinese comma "，" is used as a fallback separator.
+   */
+  function parseQuestions(text) {
+    const out = [];
+    for (let r of parseRows(text)) {
+      if (r.length === 1 && r[0].includes("，")) r = r[0].split("，");
+      r = r.map(x => x.trim());
+      if (r.length < 5 || r.slice(0, 5).some(x => x === "")) continue;
+      if (/^(question|题干|题目|问题)$/i.test(r[0])) continue;
+      out.push({ Question: r[0], Answer: r[1], Distractor1: r[2], Distractor2: r[3], Distractor3: r[4] });
+    }
+    return out;
+  }
+
+  /** Detect UTF-8 / GBK automatically (Excel often saves Chinese CSV files as GBK) */
+  function decodeText(buffer) {
+    try {
+      return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+    } catch (e) {
+      try { return new TextDecoder("gbk").decode(buffer); }
+      catch (e2) { return new TextDecoder("utf-8").decode(buffer); }
+    }
   }
 
   function createState() {
@@ -200,7 +234,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
-    parseCSV, createState, setTarget, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
@@ -215,6 +249,7 @@
   const log = $("log");
 
   let questions = [];
+  let questionSource = "questions.csv";
   let events = [];
   let state = createState();
   let lastQuestion = null;
@@ -413,6 +448,51 @@
     showStart();
   }
 
+  // ---------- Import a question set ----------
+
+  function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  function renderQuestionInfo() {
+    $("qbank-info").textContent = `Question set: ${questionSource} (${questions.length} questions)`;
+  }
+
+  $("btn-import").addEventListener("click", () => $("file-input").click());
+  $("file-input").addEventListener("change", async () => {
+    const input = $("file-input");
+    const file = input.files[0];
+    input.value = "";
+    if (!file) return;
+    const parsed = parseQuestions(decodeText(await file.arrayBuffer()));
+    const n = parsed.length;
+    if (!n) { toast("❌ No questions found. Please check the CSV format (see 📋 Question format)."); return; }
+    questions = parsed;
+    questionSource = file.name;
+    lastQuestion = null;
+    renderQuestionInfo();
+    toast(`✅ Imported "${file.name}": ${n} questions`);
+  });
+
+  $("btn-format").addEventListener("click", () => { $("format-modal").hidden = false; });
+  $("format-close").addEventListener("click", () => { $("format-modal").hidden = true; });
+  $("format-template").addEventListener("click", () => {
+    // UTF-8 BOM lets Excel open non-ASCII text correctly
+    const blob = new Blob(["\uFEFFQuestion,Answer,Distractor1,Distractor2,Distractor3\r\n"], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "questions-template.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast("Blank template downloaded");
+  });
+
   async function loadCSV(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
@@ -423,7 +503,13 @@
     renderStats();
     panel.replaceChildren(el("p", null, "Loading questions and events..."));
     try {
-      [questions, events] = await Promise.all([loadCSV("questions.csv"), loadCSV("event.csv")]);
+      const [qBuf, evs] = await Promise.all([
+        fetch("questions.csv").then(r => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`questions.csv: HTTP ${r.status}`)))),
+        loadCSV("event.csv"),
+      ]);
+      questions = parseQuestions(decodeText(qBuf));
+      events = evs;
+      renderQuestionInfo();
       if (!questions.length || !events.length) throw new Error("questions.csv or event.csv is empty");
       showStart();
     } catch (err) {

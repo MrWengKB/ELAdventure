@@ -13,6 +13,13 @@
       <button id="music-toggle" class="music-toggle" aria-pressed="true">🔊 Music: On</button>
     </header>
 
+    <div class="toolbar">
+      <button id="btn-format">📋 Question format</button>
+      <button id="btn-import">📂 Import questions</button>
+      <input type="file" id="file-input" accept=".csv,text/csv" hidden>
+      <span id="qbank-info" class="qbank-info"></span>
+    </div>
+
     <section class="stats" aria-label="Player stats">
       <div class="stat"><span class="label">Day</span><span id="stat-day" class="value">0 / 30</span></div>
       <div class="stat"><span class="label">Life</span><span id="stat-life" class="value">100 / 100</span></div>
@@ -45,6 +52,38 @@
       </div>
     </div>
   </div>
+
+  <div id="format-modal" class="modal" hidden>
+    <div class="modal-box format-box" role="dialog" aria-modal="true" aria-labelledby="format-title">
+      <h2 id="format-title">📋 Question set format</h2>
+      <p>A question set is a CSV file with <b>one question per row</b> and 5 columns separated by commas <code>,</code>:</p>
+      <table class="fmt-table">
+        <tr><th>Column</th><th>Content</th></tr>
+        <tr><td><code>Question</code></td><td>The question</td></tr>
+        <tr><td><code>Answer</code></td><td>The correct answer</td></tr>
+        <tr><td><code>Distractor1</code></td><td>A wrong option</td></tr>
+        <tr><td><code>Distractor2</code></td><td>A wrong option</td></tr>
+        <tr><td><code>Distractor3</code></td><td>A wrong option</td></tr>
+      </table>
+      <p>Example:</p>
+      <pre class="fmt-example">Question,Answer,Distractor1,Distractor2,Distractor3
+What is the capital of France?,Paris,London,Rome,Berlin
+How many months are in a year?,12,10,11,13</pre>
+      <ul class="fmt-tips">
+        <li>You can keep the header row; it is skipped when importing</li>
+        <li>The four options are shuffled in the game</li>
+        <li>If a cell contains a comma, wrap the whole cell in double quotes, e.g. <code>"1,2,3"</code></li>
+        <li>You can edit it in Excel, Google Sheets or WPS and then save as CSV; UTF-8 and GBK encodings both work</li>
+        <li>The imported set replaces the current one from the next question on; reloading the page restores the default set</li>
+      </ul>
+      <div class="modal-actions">
+        <button id="format-template">⬇️ Download blank template</button>
+        <button id="format-close" class="primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="js/music.js"></script>
   <script src="js/game.js"></script>

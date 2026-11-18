@@ -16,6 +16,12 @@ A small text adventure game that runs in the browser.
 - Shop: buy at any time with coins. Defense +5 / +10 / +15 costs 100 / 180 / 270 coins; life +10 / +20 / +30 costs 100 / 180 / 270 coins. You can only buy while life is above 0, and you need enough coins (no buying on debt). Bought life never goes above max life, and you cannot buy life at full life.
 - At 0 life you lose; survive all 30 days with life above 0 and you win. Winning or losing shows a popup that you close yourself or dismiss with "Play Again".
 
+## Importing a question set
+
+- Click "📋 Question format" at the top of the page to see the format and download a blank template.
+- Click "📂 Import questions" to pick your own CSV file. The imported set replaces the default one from the next question on. Reloading the page restores the default `questions.csv`.
+- Format: one question per row, 5 columns `Question,Answer,Distractor1,Distractor2,Distractor3`; the header row is optional; UTF-8 and GBK encodings both work, so you can save straight from Excel or Google Sheets as CSV.
+
 ## Data files
 
 - `questions.csv`: `Question,Answer,Distractor1,Distractor2,Distractor3`
