@@ -233,5 +233,5 @@ a.btn {
 }
 a.btn:hover { background: #f3e8d8; }
 .hw-qr { width: 240px; max-width: 100%; height: auto; align-self: center; border-radius: 10px; image-rendering: pixelated; border: 1px solid var(--border); }
-.num-pos { color: var(--good); }
-.num-neg { color: var(--bad); }
+.num-pos { color: var(--good); font-weight: bold; }
+.num-neg { color: var(--bad); font-weight: bold; }
