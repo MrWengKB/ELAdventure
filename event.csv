@@ -1,16 +1,16 @@
 SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount
-1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-15,0,0,-5,0,0,0,0
+1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-30,0,0,-5,0,0,0,0
 2,"Walking across the open wilds, you feel the love of nature.",full,0,10,double,10,0,0,0
-3,"Walking through the meadow, you trip over a treasure chest.",-10,100,5,0,0,0,0,0
+3,"Walking through the meadow, you trip over a treasure chest.",-20,100,5,0,0,0,0,0
 4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0,0,0,0,0,0
-5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-15,0,5,0,0,0,0,0
-6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-20,-20,0,0,0,0,0,0
+5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-30,0,5,0,0,0,0,0
+6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-40,-20,0,0,0,0,0,0
 7,"The king admires you, invites you to a banquet, and gives you a pile of jewels.",full,200,10,0,0,0,0,0
-8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-10,200,10,-5,0,0,0,0
-9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-15,0,5,-5,0,0,0,0
+8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-20,200,10,-5,0,0,0,0
+9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-30,0,5,-5,0,0,0,0
 10,"You get slightly hurt in the forest and have to pay a doctor to treat you.",0,-30,5,0,0,0,0,0
 11,"You find a coin. It looks a bit dirty.",0,1,1,0,0,0,0,0
-12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-10,0,0,-5,0,0,0,0
+12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-20,0,0,-5,0,0,0,0
 13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5,0,0,0,0,0
 14,"You read an ancient book of magic and gain mysterious powers.",full,0,10,20,20,0,0,0
 15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30,10,0,0,0,0
@@ -33,7 +33,7 @@ SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount
 32,"In an instant dark clouds gather and a fierce wind rises. A powerful enemy seems to be coming... You steel yourself for battle.",full,0,15,30,30,0,33,3
 33,"After a fierce fight you defeat the powerful enemy, but you are badly wounded.",half,0,15,half,half,32,34,0
 34,"To heal your wounds, you search the whole continent and hire the best doctor in the world.",0,-500,15,30,20,33,0,0
-35,"You easily beat a few petty thugs, take their money, and ride off in a cloud of dust.",-5,100,10,0,0,0,0,0
+35,"You easily beat a few petty thugs, take their money, and ride off in a cloud of dust.",-10,100,10,0,0,0,0,0
 36,"You arrive in a small town and hear that a great demon king lives in the mountains behind it. You buy gear all over town and get ready to find out for yourself.",full,set 0,5,double,0,0,37,5
 37,"You reach the mountains but don't know which path to take. You ask a passer-by for directions, and he points the way.",0,0,5,0,0,36,38,0
 38,"You follow the winding mountain path and finally see the demon king. Without a word, he brings a huge hammer crashing down on you.",half,0,0,half,-30,37,39,0
