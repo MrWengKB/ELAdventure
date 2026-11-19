@@ -246,6 +246,23 @@
     return { ok: true, state: s, gained: item.type === "defense" ? s.defense - state.defense : s.life - state.life };
   }
 
+  /**
+   * Event chains: the next column holds the SN of the event that must happen the following day;
+   * 0 or blank means no follow-up (the next day is random as usual). Events that some other event's next points to
+   * only happen through a chain and are never drawn at random.
+   */
+  function findEvent(events, sn) {
+    const key = String(sn ?? "").trim();
+    if (!key || key === "0") return null;
+    return events.find(e => String(e.SN).trim() === key) || null;
+  }
+
+  function randomPool(events) {
+    const targets = new Set(events.map(e => String(e.next ?? "").trim()).filter(k => k && k !== "0"));
+    const pool = events.filter(e => !targets.has(String(e.SN).trim()));
+    return pool.length ? pool : events;
+  }
+
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -265,7 +282,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
-    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
@@ -287,6 +304,7 @@
   let state = createState();
   let lastQuestion = null;
   let lastEvent = null;
+  let pendingEvent = null;
   let wrongStreak = 0;
 
   function el(tag, attrs, text) {
@@ -415,8 +433,9 @@
   }
 
   function startDay() {
-    const ev = pickRandom(events, lastEvent);
+    const ev = pendingEvent || pickRandom(randomPool(events), lastEvent);
     lastEvent = ev;
+    pendingEvent = findEvent(events, ev.next);
     const result = advanceDay(state, ev);
     state = result.state;
     renderStats();
@@ -482,7 +501,7 @@
 
   function restart() {
     state = createState();
-    lastQuestion = lastEvent = null;
+    lastQuestion = lastEvent = pendingEvent = null;
     wrongStreak = 0;
     shopMsg = "";
     log.replaceChildren();
