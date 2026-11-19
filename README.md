@@ -20,6 +20,7 @@ A small text adventure game that runs in the browser.
 - At 0 life you lose; survive all 30 days with life above 0 and you win. Winning or losing shows a popup that you close yourself or dismiss with "Play Again".
 - Event chains: the `next` column in `event.csv` holds the SN of a follow-up event. After this event happens, the follow-up event always happens the next day; 0 means no follow-up and the next day is random as usual. The `prev` column holds the SN of the event before it: 0 means the event can be drawn at random; any other value means it only happens through a chain and is never drawn on its own. For example, with 32 → 33 and 33 → 34 (33 has prev 32, 34 has prev 33), the events happen in the order 32, 33, 34. The first event of a chain holds the number of events in the whole chain in its `linkcount` column (e.g. 3 for event 32); other events have 0. A chain is only drawn if it can finish within the 30 days: a 3-event chain can be drawn on day 28 at the latest (never on day 29 or 30), and a 2-event chain on day 29 at the latest.
 - Poison: the `poisoned` column in `event.csv` is 1 if the event poisons you (0 if not). Poison starts the next day and lasts 3 days: life -10 each day, which defense does not block. Poison stacks: e.g. poisoned on day 1, you lose 10 on days 2 and 3; poisoned again on day 3, you lose 20 on day 4 and 10 on days 5 and 6. Poison damage happens before every other effect of the day; if it brings life to 0, you lose right away and that day's event does not happen. Poison damage is not part of the life column, but it is shown in the day's effects.
+- Antidote: the `antidote` column is 1 if the event gives you an antidote (N gives N; they stack). If you are poisoned when you get it, the poison ends at once (all of it), you take no poison damage that day, and one antidote is used. If you are not poisoned, the antidote lasts for the next 4 days: a poisoning event in that time does not poison you and uses up one antidote; unused antidotes expire after 4 days.
 
 ## Importing a question set
 
@@ -39,7 +40,7 @@ A small text adventure game that runs in the browser.
 ## Data files
 
 - `questions.csv`: `Question,Answer,Distractor1,Distractor2,Distractor3`
-- `event.csv`: `SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount,poisoned`
+- `event.csv`: `SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount,poisoned,antidote`
 
 ## Background music
 

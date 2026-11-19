@@ -83,6 +83,7 @@
     return {
       day: 0, life: START_MAX_LIFE, maxLife: START_MAX_LIFE, defense: START_DEFENSE,
       coins: START_COINS, exp: 0, level: 1, over: false, won: false,
+      antidotes: [], // last valid day of each antidote
       poison: [], // days left for each poison stack
     };
   }
@@ -235,28 +236,44 @@
    */
   const POISON_DAMAGE = 10;
   const POISON_DAYS = 3;
+  /**
+   * Antidote: an event with antidote 1 gives you one antidote (N gives N; they stack).
+   * - If you are poisoned when you get it: the poison ends at once (all stacks), no poison damage that day, and one antidote is used.
+   * - If you are not poisoned: you keep it for the next 4 days. A poisoned event in that time does not poison you, and uses up one antidote.
+   */
+  const ANTIDOTE_DAYS = 4;
 
   /** Start a new day: resolve poison first, then the event */
   function advanceDay(state, event) {
     const start = Object.assign({}, state, { day: state.day + 1 });
-    const stacks = state.poison || [];
+    const day = start.day;
+    start.antidotes = (state.antidotes || []).filter(last => last >= day);
+    let antidoteGain = Math.max(0, num(event.antidote));
+    let stacks = state.poison || [];
+    const cured = antidoteGain > 0 && stacks.length > 0;
+    if (cured) { stacks = []; antidoteGain--; }
     const poisonDamage = Math.min(start.life, POISON_DAMAGE * stacks.length);
     start.life -= poisonDamage;
     start.poison = stacks.map(n => n - 1).filter(n => n > 0);
     if (stacks.length && start.life <= 0) {
       start.over = true; start.won = false;
       const zero = { life: 0, maxLife: 0, defense: 0, coins: 0, exp: 0, blocked: 0 };
-      return { state: start, delta: zero, levelUp: null, poisonDamage, poisonDeath: true, poisoned: false };
+      return { state: start, delta: zero, levelUp: null, poisonDamage, poisonDeath: true, poisoned: false, poisonBlocked: false, cured: false, antidoteGain: 0 };
     }
     const { state: s, delta } = applyEvent(start, event);
-    const poisoned = num(event.poisoned) === 1;
+    let poisoned = num(event.poisoned) === 1, poisonBlocked = false;
+    if (poisoned && s.antidotes.length) {
+      s.antidotes = s.antidotes.slice().sort((a, b) => a - b).slice(1); // use the one that expires first
+      poisoned = false; poisonBlocked = true;
+    }
     if (poisoned) s.poison = s.poison.concat(POISON_DAYS);
+    if (antidoteGain) s.antidotes = s.antidotes.concat(Array(antidoteGain).fill(day + ANTIDOTE_DAYS));
     const lifeBefore = s.life, maxBefore = s.maxLife, defBefore = s.defense;
     const levels = s.life > 0 ? applyLevelUps(s) : 0;
     const levelUp = levels ? { levels, level: s.level, life: s.life - lifeBefore, maxLife: s.maxLife - maxBefore, defense: s.defense - defBefore } : null;
     if (s.life <= 0) { s.over = true; s.won = false; }
     else if (s.day >= MAX_DAYS) { s.over = true; s.won = true; }
-    return { state: s, delta, levelUp, poisonDamage, poisonDeath: false, poisoned };
+    return { state: s, delta, levelUp, poisonDamage, poisonDeath: false, poisoned, poisonBlocked, cured, antidoteGain };
   }
 
   /**
@@ -349,7 +366,7 @@
   }
 
   const Logic = {
-    START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS, POISON_DAMAGE, POISON_DAYS,
+    START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS, POISON_DAMAGE, POISON_DAYS, ANTIDOTE_DAYS,
     parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
@@ -521,6 +538,7 @@
     const lifeLabel = { full: "Life fully restored", double: "Life doubled", half: "Life halved" }[String(ev.life).trim().toLowerCase()];
     const lifeText = lifeLabel ? `${lifeLabel} (${signed(d.life)})` : `Life ${signed(d.life)}`;
     const parts = [];
+    if (result.cured) parts.push("Antidote cured the poison");
     if (result.poisonDamage) parts.push(`Poison ${signed(-result.poisonDamage)}`);
     parts.push(lifeText);
     if (d.blocked > 0) parts.push(`Defense blocked ${d.blocked} damage`);
@@ -528,6 +546,9 @@
     if (d.maxLife) parts.push(`Max life ${signed(d.maxLife)}`);
     if (d.defense) parts.push(`Defense ${signed(d.defense)}`);
     if (result.poisoned) parts.push(`Poisoned! Life -${POISON_DAMAGE} each day for the next ${POISON_DAYS} days`);
+    if (result.poisonBlocked) parts.push("Antidote blocked the poison (Antidote -1)");
+    if (result.antidoteGain) parts.push(`Antidote +${result.antidoteGain} (blocks poison for the next ${ANTIDOTE_DAYS} days)`);
+    if (state.antidotes.length) parts.push(`Antidotes held: ${state.antidotes.length}`);
     const changes = parts.join(", ");
     addLog(`Day ${state.day}: ${ev.event} (`, ...colorize(changes), ")");
 
