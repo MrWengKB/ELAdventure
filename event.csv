@@ -1,6 +1,6 @@
 SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount,poisoned,antidote
 1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-30,0,0,-5,0,0,0,0,1,0
-2,"Walking across the open wilds, you feel the love of nature.",full,0,10,double,10,0,0,0,0,0
+2,"Walking across the open wilds, you feel the love of nature.",full,0,10,double,10,0,0,0,0,1
 3,"Walking through the meadow, you trip over a treasure chest.",-20,100,5,0,0,0,0,0,0,0
 4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0,0,0,0,0,0,0,0
 5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-30,0,5,0,0,0,0,0,0,0
@@ -26,7 +26,7 @@ SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount,poisoned,antidote
 25,"You climb a tall tower and gaze into the distance, and suddenly everything feels clear.",full,0,10,30,0,0,0,0,0,0
 26,"You save an old wizard. Deeply grateful, he casts a spell on your purse.",0,double,10,0,0,0,0,0,0,0
 27,"A hare starts talking and asks you for money. You are so stunned that it can talk that, before you know it, your purse has been emptied.",0,set 0,0,0,0,0,0,0,0,0
-28,"In the forest you meet an immortal who asks you some strange questions, then vanishes before you can answer.",0,nodebt,10,10,0,0,0,0,0,0
+28,"In the forest you meet an immortal who asks you some strange questions, then vanishes before you can answer.",0,nodebt,10,10,0,0,0,0,0,1
 29,"You see a hare running very fast and, refusing to be outdone, chase after it. Unsurprisingly, something goes wrong.",half,0,0,set 10,-20,0,0,0,0,0
 30,"You solve an easy case for the king, and he decides to give you a small reward.",0,nodebt,10,0,0,0,0,0,0,0
 31,"You solve a very tricky case for the king, and he decides to give you a big reward.",0,double,10,0,0,0,0,0,0,0
@@ -44,3 +44,4 @@ SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount,poisoned,antidote
 43,"You lose your way in the jungle and stumble into a misty forest. The air has a pungent smell.",-20,0,0,0,0,0,0,0,1,0
 44,"You lose your way in the jungle and stumble into a misty forest. The air smells heavenly.",20,0,0,0,0,0,0,0,0,0
 45,"You arrive at an inn, ready to rest for a few days, but the food there makes you violently sick.",-20,0,0,0,0,0,0,0,1,0
+46,"You chase off a gang of thugs who were ganging up on an old doctor. To thank you, he gives you a bottle of antidote.",0,0,0,0,0,0,0,0,0,1
