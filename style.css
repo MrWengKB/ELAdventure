@@ -247,4 +247,5 @@ a.btn:hover { background: #f3e8d8; }
   .stat { padding: 6px 2px; }
   .stat .label { font-size: 0.75rem; }
   .stat .value { font-size: 0.95rem; white-space: nowrap; }
+  .shop-item { font-size: 0.85rem; padding: 8px 4px; white-space: nowrap; }
 }
