@@ -198,11 +198,11 @@
 
   /**
    * Levels: total EXP needed for level L = 30 + 15 × (L-1) × (L-2), i.e. Lv2 30, Lv3 60, Lv4 120, Lv5 210, Lv6 330...
-   * (from Lv2 on, each level needs 30 more EXP than the previous gap.) Reaching Lv N: max life +N×10, defense +N×5, and life is fully restored.
+   * (from Lv2 on, each level needs 30 more EXP than the previous gap.) Reaching Lv N: max life +N×5 (life follows the max life rules, no healing), defense +N×2.
    * No level up if the day's event brought life to 0 (the game is already over).
    */
-  const LEVEL_MAX_LIFE = 10; // × new level
-  const LEVEL_DEFENSE = 5;   // × new level
+  const LEVEL_MAX_LIFE = 5;  // × new level
+  const LEVEL_DEFENSE = 2;   // × new level
 
   function expForLevel(level) {
     return level <= 1 ? 0 : 30 + 15 * (level - 1) * (level - 2);
@@ -222,7 +222,6 @@
       changeMaxLife(s, LEVEL_MAX_LIFE * lv);
       s.defense += LEVEL_DEFENSE * lv;
     }
-    if (gained) s.life = s.maxLife;
     s.level = Math.max(s.level, target);
     return gained;
   }
