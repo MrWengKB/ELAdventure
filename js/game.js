@@ -292,10 +292,25 @@
     return events.find(e => String(e.SN).trim() === key) || null;
   }
 
-  function randomPool(events) {
+  /** Chain length: this event plus the follow-ups reached through next */
+  function chainLength(events, ev) {
+    let n = 0;
+    const seen = new Set();
+    for (let e = ev; e && !seen.has(e); e = findEvent(events, e.next)) { seen.add(e); n++; }
+    return n;
+  }
+
+  /**
+   * Events that can be drawn at random: prev is 0, and the whole chain fits in the days left.
+   * day is the day about to start; days left = MAX_DAYS - day + 1 (including today). E.g. a 3-event chain can be drawn on day 28 at the latest, never on day 29.
+   */
+  function randomPool(events, day) {
     const hasPrev = e => { const k = String(e.prev ?? "").trim(); return k !== "" && k !== "0"; };
-    const pool = events.filter(e => !hasPrev(e));
-    return pool.length ? pool : events;
+    const daysLeft = day ? MAX_DAYS - day + 1 : Infinity;
+    const pool = events.filter(e => !hasPrev(e) && chainLength(events, e) <= daysLeft);
+    if (pool.length) return pool;
+    const fallback = events.filter(e => !hasPrev(e));
+    return fallback.length ? fallback : events;
   }
 
   function shuffle(arr) {
@@ -317,7 +332,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
-    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, chainLength, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
@@ -469,7 +484,7 @@
   }
 
   function startDay() {
-    const ev = pendingEvent || pickRandom(randomPool(events), lastEvent);
+    const ev = pendingEvent || pickRandom(randomPool(events, state.day + 1), lastEvent);
     lastEvent = ev;
     pendingEvent = findEvent(events, ev.next);
     const result = advanceDay(state, ev);
