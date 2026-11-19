@@ -559,7 +559,7 @@
     const lifeLabel = { full: "♥️ fully restored", double: "♥️ doubled", half: "♥️ halved" }[String(ev.life).trim().toLowerCase()];
     const lifeText = lifeLabel ? `${lifeLabel} (${signed(d.life)})` : `♥️ ${signed(d.life)}`;
     const parts = [];
-    if (result.cured) parts.push("💊Antidote cured the poison");
+    if (result.cured) parts.push("💊 cured the poison");
     if (result.poisonDamage) parts.push(`☠️ ${signed(-result.poisonDamage)}`);
     parts.push(lifeText);
     if (d.blocked > 0) parts.push(`🛡️ blocked ${d.blocked} damage`);
@@ -567,9 +567,9 @@
     if (d.maxLife) parts.push(`💕Max ${signed(d.maxLife)}`);
     if (d.defense) parts.push(`🛡️ ${signed(d.defense)}`);
     if (result.poisoned) parts.push(`☠️Poisoned! ♥️ -${POISON_DAMAGE} each day for the next ${POISON_DAYS} days`);
-    if (result.poisonBlocked) parts.push("💊Antidote blocked the poison (💊Antidote -1)");
-    if (result.antidoteGain) parts.push(`💊Antidote +${result.antidoteGain} (blocks poison for the next ${ANTIDOTE_DAYS} days)`);
-    if (state.antidotes.length) parts.push(`💊Antidotes held: ${state.antidotes.length}`);
+    if (result.poisonBlocked) parts.push("💊 blocked the poison (💊 -1)");
+    if (result.antidoteGain) parts.push(`💊 +${result.antidoteGain} (blocks poison for the next ${ANTIDOTE_DAYS} days)`);
+    if (state.antidotes.length) parts.push(`💊 held: ${state.antidotes.length}`);
     const changes = parts.join(", ");
     addLog(`Day ${state.day}: ${ev.event} (`, ...colorize(changes), ")");
 
