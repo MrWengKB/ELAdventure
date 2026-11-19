@@ -463,15 +463,15 @@
       state = r.state;
       if (item.type === "antidote") {
         const held = state.antidotes.length;
-        const what = r.cured ? "💊 cured the poison" : `💊 +1 (blocks poison for the next ${ANTIDOTE_DAYS} days)`;
-        shopMsg = `Bought: ${what}, 💰 -${item.price}` + (held ? `, 💊 held: ${held}` : "");
-        addLog(...colorize(`Shop: ${what}, 💰 -${item.price}` + (held ? `, 💊 held: ${held}` : "")));
+        const what = r.cured ? "💊Antidote cured the poison" : `💊Antidote +1 (blocks poison for the next ${ANTIDOTE_DAYS} days)`;
+        shopMsg = `Bought: ${what}, 💰Coins -${item.price}` + (held ? `, 💊Antidotes held: ${held}` : "");
+        addLog(...colorize(`Shop: ${what}, 💰Coins -${item.price}` + (held ? `, 💊Antidotes held: ${held}` : "")));
         renderStats();
         return;
       }
-      const what = item.type === "defense" ? "🛡️" : "♥️";
-      shopMsg = `Bought: ${what} +${r.gained}, 💰 -${item.price}`;
-      addLog(...colorize(`Shop: ${what} +${r.gained}, 💰 -${item.price}`));
+      const what = item.type === "defense" ? "🛡️Defense" : "♥️Life";
+      shopMsg = `Bought: ${what} +${r.gained}, 💰Coins -${item.price}`;
+      addLog(...colorize(`Shop: ${what} +${r.gained}, 💰Coins -${item.price}`));
     }
     renderStats();
   }
@@ -549,27 +549,27 @@
 
     const d = result.delta;
     if (result.poisonDeath) {
-      const msg = `☠️ ${signed(-result.poisonDamage)}`;
+      const msg = `☠️Poison ${signed(-result.poisonDamage)}`;
       addLog(`Day ${state.day}: `, ...colorize(msg));
       const c = el("p", { class: "changes" }); c.append(...colorize(msg));
       panel.replaceChildren(el("p", null, `Day ${state.day}`), c);
       lose("The poison killed you... ");
       return;
     }
-    const lifeLabel = { full: "♥️ fully restored", double: "♥️ doubled", half: "♥️ halved" }[String(ev.life).trim().toLowerCase()];
-    const lifeText = lifeLabel ? `${lifeLabel} (${signed(d.life)})` : `♥️ ${signed(d.life)}`;
+    const lifeLabel = { full: "♥️Life fully restored", double: "♥️Life doubled", half: "♥️Life halved" }[String(ev.life).trim().toLowerCase()];
+    const lifeText = lifeLabel ? `${lifeLabel} (${signed(d.life)})` : `♥️Life ${signed(d.life)}`;
     const parts = [];
-    if (result.cured) parts.push("💊 cured the poison");
-    if (result.poisonDamage) parts.push(`☠️ ${signed(-result.poisonDamage)}`);
+    if (result.cured) parts.push("💊Antidote cured the poison");
+    if (result.poisonDamage) parts.push(`☠️Poison ${signed(-result.poisonDamage)}`);
     parts.push(lifeText);
-    if (d.blocked > 0) parts.push(`🛡️ blocked ${d.blocked} damage`);
-    parts.push(`💰 ${signed(d.coins)}`, `⭐ ${signed(d.exp)}`);
-    if (d.maxLife) parts.push(`💕Max ${signed(d.maxLife)}`);
-    if (d.defense) parts.push(`🛡️ ${signed(d.defense)}`);
-    if (result.poisoned) parts.push(`☠️Poisoned! ♥️ -${POISON_DAMAGE} each day for the next ${POISON_DAYS} days`);
-    if (result.poisonBlocked) parts.push("💊 blocked the poison (💊 -1)");
-    if (result.antidoteGain) parts.push(`💊 +${result.antidoteGain} (blocks poison for the next ${ANTIDOTE_DAYS} days)`);
-    if (state.antidotes.length) parts.push(`💊 held: ${state.antidotes.length}`);
+    if (d.blocked > 0) parts.push(`🛡️Defense blocked ${d.blocked} damage`);
+    parts.push(`💰Coins ${signed(d.coins)}`, `⭐EXP ${signed(d.exp)}`);
+    if (d.maxLife) parts.push(`💕Max life ${signed(d.maxLife)}`);
+    if (d.defense) parts.push(`🛡️Defense ${signed(d.defense)}`);
+    if (result.poisoned) parts.push(`☠️Poisoned! ♥️Life -${POISON_DAMAGE} each day for the next ${POISON_DAYS} days`);
+    if (result.poisonBlocked) parts.push("💊Antidote blocked the poison (💊Antidote -1)");
+    if (result.antidoteGain) parts.push(`💊Antidote +${result.antidoteGain} (blocks poison for the next ${ANTIDOTE_DAYS} days)`);
+    if (state.antidotes.length) parts.push(`💊Antidotes held: ${state.antidotes.length}`);
     const changes = parts.join(", ");
     addLog(`Day ${state.day}: ${ev.event} (`, ...colorize(changes), ")");
 
@@ -580,7 +580,7 @@
     ];
     if (result.levelUp) {
       const u = result.levelUp;
-      const up = `Level up! You reached Lv ${u.level}: 💕Max ${signed(u.maxLife)}, 🛡️ ${signed(u.defense)}` + (u.life ? `, ♥️ ${signed(u.life)}` : "");
+      const up = `Level up! You reached Lv ${u.level}: 💕Max life ${signed(u.maxLife)}, 🛡️Defense ${signed(u.defense)}` + (u.life ? `, ♥️Life ${signed(u.life)}` : "");
       const p = el("p", { class: "level-up" }); p.append("⭐ ", ...colorize(up));
       nodes.push(p);
       addLog("⭐ ", ...colorize(up));
