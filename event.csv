@@ -34,3 +34,8 @@ SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount
 33,"After a fierce fight you defeat the powerful enemy, but you are badly wounded.",half,0,15,half,half,32,34,0
 34,"To heal your wounds, you search the whole continent and hire the best doctor in the world.",0,-500,15,30,20,33,0,0
 35,"You easily beat a few petty thugs, take their money, and ride off in a cloud of dust.",-5,100,10,0,0,0,0,0
+36,"You arrive in a small town and hear that a great demon king lives in the mountains behind it. You buy gear all over town and get ready to find out for yourself.",full,set 0,5,double,0,0,37,5
+37,"You reach the mountains but don't know which path to take. You ask a passer-by for directions, and he points the way.",0,0,5,0,0,36,38,0
+38,"You follow the winding mountain path and finally see the demon king. Without a word, he brings a huge hammer crashing down on you.",half,0,0,half,-30,37,39,0
+39,"Summoning your courage, you leap high into the air and drive your sword straight into the demon king's left eye.",0,0,20,0,0,38,40,0
+40,"The demon king thrashes in agony, loses his footing and plunges into the valley, never to return.",0,0,double,0,0,39,0,0
