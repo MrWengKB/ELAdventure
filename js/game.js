@@ -84,6 +84,7 @@
       day: 0, life: START_MAX_LIFE, maxLife: START_MAX_LIFE, defense: START_DEFENSE,
       coins: START_COINS, exp: 0, level: 1, over: false, won: false,
       antidotes: [], // last valid day of each antidote
+      antidoteBoughtDay: -1,
       poison: [], // days left for each poison stack
     };
   }
@@ -305,6 +306,7 @@
     { id: "life10", type: "life", amount: 10, price: 100 },
     { id: "life20", type: "life", amount: 20, price: 180 },
     { id: "life30", type: "life", amount: 30, price: 270 },
+    { id: "antidote", type: "antidote", amount: 1, price: 200 },
   ];
 
   /**
@@ -315,8 +317,17 @@
     if (state.over || state.life <= 0) return { ok: false, state, reason: "You cannot buy anything at 0 life." };
     if (state.coins < item.price) return { ok: false, state, reason: "Not enough coins." };
     if (item.type === "life" && state.life >= state.maxLife) return { ok: false, state, reason: "Your life is already full." };
+    if (item.type === "antidote" && state.antidoteBoughtDay === state.day) return { ok: false, state, reason: "You can only buy 1 antidote per day." };
     const s = Object.assign({}, state);
     s.coins -= item.price;
+    if (item.type === "antidote") {
+      // poisoned: cured at once; otherwise lasts for the next ANTIDOTE_DAYS days
+      s.antidoteBoughtDay = s.day;
+      const cured = (s.poison || []).length > 0;
+      if (cured) s.poison = [];
+      else s.antidotes = (s.antidotes || []).filter(last => last > s.day).concat(s.day + ANTIDOTE_DAYS);
+      return { ok: true, state: s, gained: 1, cured };
+    }
     if (item.type === "defense") s.defense += item.amount;
     else s.life = Math.min(s.maxLife, s.life + item.amount);
     return { ok: true, state: s, gained: item.type === "defense" ? s.defense - state.defense : s.life - state.life };
@@ -426,6 +437,7 @@
   let shopMsg = "";
 
   function itemLabel(item) {
+    if (item.type === "antidote") return `Antidote x1 (${item.price} coins, 1 per day)`;
     return `${item.type === "defense" ? "Defense" : "Life"} +${item.amount} (${item.price} coins)`;
   }
 
@@ -434,7 +446,8 @@
     if (!box) return;
     box.replaceChildren(...SHOP_ITEMS.map(item => {
       const disabled = state.over || state.life <= 0 || state.coins < item.price ||
-        (item.type === "life" && state.life >= state.maxLife);
+        (item.type === "life" && state.life >= state.maxLife) ||
+        (item.type === "antidote" && state.antidoteBoughtDay === state.day);
       const b = el("button", { class: "shop-item " + item.type, onclick: () => buy(item) }, itemLabel(item));
       b.disabled = disabled;
       return b;
@@ -448,6 +461,14 @@
       shopMsg = r.reason;
     } else {
       state = r.state;
+      if (item.type === "antidote") {
+        const held = state.antidotes.length;
+        const what = r.cured ? "Antidote cured the poison" : `Antidote +1 (blocks poison for the next ${ANTIDOTE_DAYS} days)`;
+        shopMsg = `Bought: ${what} for ${item.price} coins.` + (held ? ` Antidotes held: ${held}.` : "");
+        addLog(`Shop: ${what} (-${item.price} coins)` + (held ? `, Antidotes held: ${held}` : ""));
+        renderStats();
+        return;
+      }
       const what = item.type === "defense" ? "Defense" : "Life";
       shopMsg = `Bought: ${what} +${r.gained} for ${item.price} coins.`;
       addLog(`Shop: ${what} +${r.gained} (-${item.price} coins)`);

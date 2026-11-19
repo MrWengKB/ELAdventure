@@ -236,3 +236,4 @@ a.btn:hover { background: #f3e8d8; }
 .num-pos { color: var(--good); font-weight: bold; }
 .num-neg { color: var(--bad); font-weight: bold; }
 .panel .level-up { color: #b26a00; font-weight: bold; }
+.shop-item.antidote { grid-column: 1 / -1; }
