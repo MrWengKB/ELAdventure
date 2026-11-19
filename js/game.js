@@ -250,7 +250,7 @@
    * Event chains: the next column holds the SN of the event that must happen the following day;
    * 0 or blank means no follow-up (the next day is random as usual).
    * The prev column holds the SN of the event before it: events whose prev is not 0 only happen through a chain and are
-   * never drawn at random (the same goes for any event that some other event's next points to).
+   * never drawn at random.
    */
   function findEvent(events, sn) {
     const key = String(sn ?? "").trim();
@@ -259,9 +259,8 @@
   }
 
   function randomPool(events) {
-    const targets = new Set(events.map(e => String(e.next ?? "").trim()).filter(k => k && k !== "0"));
     const hasPrev = e => { const k = String(e.prev ?? "").trim(); return k !== "" && k !== "0"; };
-    const pool = events.filter(e => !hasPrev(e) && !targets.has(String(e.SN).trim()));
+    const pool = events.filter(e => !hasPrev(e));
     return pool.length ? pool : events;
   }
 
