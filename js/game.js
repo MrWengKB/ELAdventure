@@ -175,7 +175,7 @@
     const expRaw = String(event.exp ?? "").trim().toLowerCase();
     // full: EXP is topped up to the next level (one level up); double: EXP doubles
     if (expRaw === "full") s.exp = Math.max(s.exp, expForLevel((s.level || 1) + 1));
-    else if (expRaw === "double") s.exp *= 2;
+    else if (expRaw === "double") s.exp = s.exp === 0 ? 5 : s.exp * 2;
     else s.exp += Math.max(0, num(event.exp));
     const maxOp = special(event.maxlife);
     if (maxOp === "double") changeMaxLife(s, s.maxLife);
