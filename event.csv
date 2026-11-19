@@ -44,4 +44,4 @@ SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount,poisoned,antidote
 43,"You lose your way in the jungle and stumble into a misty forest. The air has a pungent smell.",-20,0,0,0,0,0,0,0,1,0
 44,"You lose your way in the jungle and stumble into a misty forest. The air smells heavenly.",20,0,0,0,0,0,0,0,0,0
 45,"You arrive at an inn, ready to rest for a few days, but the food there makes you violently sick.",-20,0,0,0,0,0,0,0,1,0
-46,"You chase off a gang of thugs who were ganging up on an old doctor. To thank you, he gives you a bottle of antidote.",0,0,0,0,0,0,0,0,0,1
+46,"You chase off a gang of thugs who were ganging up on an old doctor. To thank you, he gives you an antidote pill.",0,0,0,0,0,0,0,0,0,1
