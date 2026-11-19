@@ -172,7 +172,11 @@
       else s.coins = halve(s.coins);
     } else if (setTarget(event.coins) !== null) s.coins = capTo(s.coins, event.coins);
     else s.coins += num(event.coins);
-    s.exp += Math.max(0, num(event.exp));
+    const expRaw = String(event.exp ?? "").trim().toLowerCase();
+    // full: EXP is topped up to the next level (one level up); double: EXP doubles
+    if (expRaw === "full") s.exp = Math.max(s.exp, expForLevel((s.level || 1) + 1));
+    else if (expRaw === "double") s.exp *= 2;
+    else s.exp += Math.max(0, num(event.exp));
     const maxOp = special(event.maxlife);
     if (maxOp === "double") changeMaxLife(s, s.maxLife);
     else if (maxOp === "half") changeMaxLife(s, halve(s.maxLife) - s.maxLife);
