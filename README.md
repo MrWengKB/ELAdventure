@@ -17,7 +17,7 @@ A small text adventure game that runs in the browser.
   - `coins` also accepts `nodebt`: negative coins become 0 (debt cleared); otherwise it counts as +30.
 - Shop: buy at any time with coins. Defense +5 / +10 / +15 costs 100 / 180 / 270 coins; life +10 / +20 / +30 costs 100 / 180 / 270 coins. You can only buy while life is above 0, and you need enough coins (no buying on debt). Bought life never goes above max life, and you cannot buy life at full life.
 - At 0 life you lose; survive all 30 days with life above 0 and you win. Winning or losing shows a popup that you close yourself or dismiss with "Play Again".
-- Event chains: the `next` column in `event.csv` holds the SN of a follow-up event. After this event happens, the follow-up event always happens the next day; 0 means no follow-up and the next day is random as usual. Events that another event's `next` points to only happen through a chain and are never drawn at random. For example, with 32 → 33 and 33 → 34, the events happen in the order 32, 33, 34.
+- Event chains: the `next` column in `event.csv` holds the SN of a follow-up event. After this event happens, the follow-up event always happens the next day; 0 means no follow-up and the next day is random as usual. The `prev` column holds the SN of the event before it: 0 means the event can be drawn at random; any other value means it only happens through a chain and is never drawn on its own (the same goes for events that another event's `next` points to). For example, with 32 → 33 and 33 → 34 (33 has prev 32, 34 has prev 33), the events happen in the order 32, 33, 34.
 
 ## Importing a question set
 
@@ -37,7 +37,7 @@ A small text adventure game that runs in the browser.
 ## Data files
 
 - `questions.csv`: `Question,Answer,Distractor1,Distractor2,Distractor3`
-- `event.csv`: `SN,event,life,coins,exp,defense,maxlife,next`
+- `event.csv`: `SN,event,life,coins,exp,defense,maxlife,prev,next`
 
 ## Background music
 
