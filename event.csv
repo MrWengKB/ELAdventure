@@ -1,36 +1,36 @@
-SN,event,life,coins,exp,defense,maxlife,prev,next
-1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-15,0,0,-5,0,0,0
-2,"Walking across the open wilds, you feel the love of nature.",full,0,10,double,10,0,0
-3,"Walking through the meadow, you trip over a treasure chest.",-10,100,5,0,0,0,0
-4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0,0,0,0,0
-5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-15,0,5,0,0,0,0
-6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-20,-20,0,0,0,0,0
-7,"The king admires you, invites you to a banquet, and gives you a pile of jewels.",full,200,10,0,0,0,0
-8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-10,200,10,-5,0,0,0
-9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-15,0,5,-5,0,0,0
-10,"You get slightly hurt in the forest and have to pay a doctor to treat you.",0,-30,5,0,0,0,0
-11,"You find a coin. It looks a bit dirty.",0,1,1,0,0,0,0
-12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-10,0,0,-5,0,0,0
-13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5,0,0,0,0
-14,"You read an ancient book of magic and gain mysterious powers.",full,0,10,20,20,0,0
-15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30,10,0,0,0
-16,"You wake up to find your coat and gear gone, and your purse empty too.",0,set 0,0,set 5,0,0,0
-17,"A gang of bandits comes after you. To save your life, you throw them your purse.",0,set 0,0,0,0,0,0
-18,"You lose your footing and fall off a cliff. Luckily you grab a vine and survive, but your gear is badly damaged.",set 10,0,10,set 10,0,0,0
-19,"You run into an evil witch, who casts a wicked spell on you.",set 80,0,0,set 0,set 80,0,0
-20,"A genie in a lamp asks whether you choose wealth or health. Without a moment's hesitation, you choose wealth.",set 90,500,10,set 0,set 100,0,0
-21,"A genie in a lamp asks whether you choose wealth or health. After some thought, you choose health.",full,set 10,10,0,20,0,0
-22,"You pass an ancient ruin, and a mysterious power surges into your body.",full,0,10,double,double,0,0
-23,"You pass an ancient ruin and suddenly feel an ominous shiver run through your body.",half,0,10,half,-30,0,0
-24,"An aged knight who can no longer ride into battle gives you all his valuable gear.",0,0,10,double,0,0,0
-25,"You climb a tall tower and gaze into the distance, and suddenly everything feels clear.",full,0,10,30,0,0,0
-26,"You save an old wizard. Deeply grateful, he casts a spell on your purse.",0,double,10,0,0,0,0
-27,"A hare starts talking and asks you for money. You are so stunned that it can talk that, before you know it, your purse has been emptied.",0,set 0,0,0,0,0,0
-28,"In the forest you meet an immortal who asks you some strange questions, then vanishes before you can answer.",0,nodebt,10,10,0,0,0
-29,"You see a hare running very fast and, refusing to be outdone, chase after it. Unsurprisingly, something goes wrong.",half,0,0,set 10,-20,0,0
-30,"You solve an easy case for the king, and he decides to give you a small reward.",0,nodebt,10,0,0,0,0
-31,"You solve a very tricky case for the king, and he decides to give you a big reward.",0,double,10,0,0,0,0
-32,"In an instant dark clouds gather and a fierce wind rises. A powerful enemy seems to be coming... You steel yourself for battle.",full,0,15,30,30,0,33
-33,"After a fierce fight you defeat the powerful enemy, but you are badly wounded.",half,0,15,half,half,32,34
-34,"To heal your wounds, you search the whole continent and hire the best doctor in the world.",0,-500,15,30,20,33,0
-35,"You easily beat a few petty thugs, take their money, and ride off in a cloud of dust.",-5,100,10,0,0,0,0
+SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount
+1,"You are admiring the beautiful forest scenery when a venomous snake suddenly bites you!",-15,0,0,-5,0,0,0,0
+2,"Walking across the open wilds, you feel the love of nature.",full,0,10,double,10,0,0,0
+3,"Walking through the meadow, you trip over a treasure chest.",-10,100,5,0,0,0,0,0
+4,"The king's knight finds you and challenges you to a duel. You give him a little money and he goes away.",0,-10,0,0,0,0,0,0
+5,"The king's knight finds you and challenges you to a duel. You can't say no, and the knight wounds you.",-15,0,5,0,0,0,0,0
+6,"A gang of bandits has its eye on your purse and decides to rob you and leave you for dead.",-20,-20,0,0,0,0,0,0
+7,"The king admires you, invites you to a banquet, and gives you a pile of jewels.",full,200,10,0,0,0,0,0
+8,"The king admires you, gives you a pile of jewels, and invites you to a banquet. You end up with indigestion.",-10,200,10,-5,0,0,0,0
+9,"What's that?! Such a beautiful mushroom! Oh no, it's poisonous!",-15,0,5,-5,0,0,0,0
+10,"You get slightly hurt in the forest and have to pay a doctor to treat you.",0,-30,5,0,0,0,0,0
+11,"You find a coin. It looks a bit dirty.",0,1,1,0,0,0,0,0
+12,"It was sunny a moment ago, but suddenly it pours. You get soaked and catch a cold.",-10,0,0,-5,0,0,0,0
+13,"It was sunny a moment ago, but suddenly it pours. You have to pay for a carriage to take you home.",0,-25,5,0,0,0,0,0
+14,"You read an ancient book of magic and gain mysterious powers.",full,0,10,20,20,0,0,0
+15,"You pull a sword from a stone, and everyone around starts calling you Arthur.",0,0,30,10,0,0,0,0
+16,"You wake up to find your coat and gear gone, and your purse empty too.",0,set 0,0,set 5,0,0,0,0
+17,"A gang of bandits comes after you. To save your life, you throw them your purse.",0,set 0,0,0,0,0,0,0
+18,"You lose your footing and fall off a cliff. Luckily you grab a vine and survive, but your gear is badly damaged.",set 10,0,10,set 10,0,0,0,0
+19,"You run into an evil witch, who casts a wicked spell on you.",set 80,0,0,set 0,set 80,0,0,0
+20,"A genie in a lamp asks whether you choose wealth or health. Without a moment's hesitation, you choose wealth.",set 90,500,10,set 0,set 100,0,0,0
+21,"A genie in a lamp asks whether you choose wealth or health. After some thought, you choose health.",full,set 10,10,0,20,0,0,0
+22,"You pass an ancient ruin, and a mysterious power surges into your body.",full,0,10,double,double,0,0,0
+23,"You pass an ancient ruin and suddenly feel an ominous shiver run through your body.",half,0,10,half,-30,0,0,0
+24,"An aged knight who can no longer ride into battle gives you all his valuable gear.",0,0,10,double,0,0,0,0
+25,"You climb a tall tower and gaze into the distance, and suddenly everything feels clear.",full,0,10,30,0,0,0,0
+26,"You save an old wizard. Deeply grateful, he casts a spell on your purse.",0,double,10,0,0,0,0,0
+27,"A hare starts talking and asks you for money. You are so stunned that it can talk that, before you know it, your purse has been emptied.",0,set 0,0,0,0,0,0,0
+28,"In the forest you meet an immortal who asks you some strange questions, then vanishes before you can answer.",0,nodebt,10,10,0,0,0,0
+29,"You see a hare running very fast and, refusing to be outdone, chase after it. Unsurprisingly, something goes wrong.",half,0,0,set 10,-20,0,0,0
+30,"You solve an easy case for the king, and he decides to give you a small reward.",0,nodebt,10,0,0,0,0,0
+31,"You solve a very tricky case for the king, and he decides to give you a big reward.",0,double,10,0,0,0,0,0
+32,"In an instant dark clouds gather and a fierce wind rises. A powerful enemy seems to be coming... You steel yourself for battle.",full,0,15,30,30,0,33,3
+33,"After a fierce fight you defeat the powerful enemy, but you are badly wounded.",half,0,15,half,half,32,34,0
+34,"To heal your wounds, you search the whole continent and hire the best doctor in the world.",0,-500,15,30,20,33,0,0
+35,"You easily beat a few petty thugs, take their money, and ride off in a cloud of dust.",-5,100,10,0,0,0,0,0
