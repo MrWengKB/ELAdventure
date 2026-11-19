@@ -194,7 +194,8 @@
 
   /**
    * Levels: total EXP needed for level L = 30 + 15 × (L-1) × (L-2), i.e. Lv2 30, Lv3 60, Lv4 120, Lv5 210, Lv6 330...
-   * (from Lv2 on, each level needs 30 more EXP than the previous gap.) Reaching Lv N: max life +N×10 (life follows the max life rules), defense +N×5.
+   * (from Lv2 on, each level needs 30 more EXP than the previous gap.) Reaching Lv N: max life +N×10, defense +N×5, and life is fully restored.
+   * No level up if the day's event brought life to 0 (the game is already over).
    */
   const LEVEL_MAX_LIFE = 10; // × new level
   const LEVEL_DEFENSE = 5;   // × new level
@@ -217,6 +218,7 @@
       changeMaxLife(s, LEVEL_MAX_LIFE * lv);
       s.defense += LEVEL_DEFENSE * lv;
     }
+    if (gained) s.life = s.maxLife;
     s.level = Math.max(s.level, target);
     return gained;
   }
@@ -225,7 +227,7 @@
   function advanceDay(state, event) {
     const { state: s, delta } = applyEvent(Object.assign({}, state, { day: state.day + 1 }), event);
     const lifeBefore = s.life, maxBefore = s.maxLife, defBefore = s.defense;
-    const levels = applyLevelUps(s);
+    const levels = s.life > 0 ? applyLevelUps(s) : 0;
     const levelUp = levels ? { levels, level: s.level, life: s.life - lifeBefore, maxLife: s.maxLife - maxBefore, defense: s.defense - defBefore } : null;
     if (s.life <= 0) { s.over = true; s.won = false; }
     else if (s.day >= MAX_DAYS) { s.over = true; s.won = true; }
