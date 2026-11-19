@@ -30,7 +30,7 @@ SN,event,life,coins,exp,defense,maxlife,prev,next
 29,"You see a hare running very fast and, refusing to be outdone, chase after it. Unsurprisingly, something goes wrong.",half,0,0,set 10,-20,0,0
 30,"You solve an easy case for the king, and he decides to give you a small reward.",0,nodebt,10,0,0,0,0
 31,"You solve a very tricky case for the king, and he decides to give you a big reward.",0,double,10,0,0,0,0
-32,"In an instant dark clouds gather and a fierce wind rises. A powerful enemy seems to be coming... You steel yourself for battle.",full,0,0,30,30,0,33
-33,"After a fierce fight you defeat the powerful enemy, but you are badly wounded.",half,0,0,half,half,32,34
-34,"To heal your wounds, you search the whole continent and hire the best doctor in the world.",0,-500,0,30,20,33,0
+32,"In an instant dark clouds gather and a fierce wind rises. A powerful enemy seems to be coming... You steel yourself for battle.",full,0,15,30,30,0,33
+33,"After a fierce fight you defeat the powerful enemy, but you are badly wounded.",half,0,15,half,half,32,34
+34,"To heal your wounds, you search the whole continent and hire the best doctor in the world.",0,-500,15,30,20,33,0
 35,"You easily beat a few petty thugs, take their money, and ride off in a cloud of dust.",-5,100,0,0,0,0,0
