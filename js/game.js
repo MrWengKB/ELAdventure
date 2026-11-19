@@ -82,7 +82,7 @@
   function createState() {
     return {
       day: 0, life: START_MAX_LIFE, maxLife: START_MAX_LIFE, defense: START_DEFENSE,
-      coins: START_COINS, exp: 0, over: false, won: false,
+      coins: START_COINS, exp: 0, level: 1, over: false, won: false,
     };
   }
 
@@ -192,12 +192,44 @@
     };
   }
 
+  /**
+   * Levels: total EXP needed for level L = 30 + 15 × (L-1) × (L-2), i.e. Lv2 30, Lv3 60, Lv4 120, Lv5 210, Lv6 330...
+   * (from Lv2 on, each level needs 30 more EXP than the previous gap.) Reaching Lv N: max life +N×10 (life follows the max life rules), defense +N×5.
+   */
+  const LEVEL_MAX_LIFE = 10; // × new level
+  const LEVEL_DEFENSE = 5;   // × new level
+
+  function expForLevel(level) {
+    return level <= 1 ? 0 : 30 + 15 * (level - 1) * (level - 2);
+  }
+
+  function levelForExp(exp) {
+    let level = 1;
+    while (exp >= expForLevel(level + 1)) level++;
+    return level;
+  }
+
+  /** Level up from EXP (mutates s); returns the number of levels gained */
+  function applyLevelUps(s) {
+    const target = levelForExp(s.exp);
+    const gained = Math.max(0, target - s.level);
+    for (let lv = s.level + 1; lv <= target; lv++) {
+      changeMaxLife(s, LEVEL_MAX_LIFE * lv);
+      s.defense += LEVEL_DEFENSE * lv;
+    }
+    s.level = Math.max(s.level, target);
+    return gained;
+  }
+
   /** Start a new day and resolve its event */
   function advanceDay(state, event) {
     const { state: s, delta } = applyEvent(Object.assign({}, state, { day: state.day + 1 }), event);
+    const lifeBefore = s.life, maxBefore = s.maxLife, defBefore = s.defense;
+    const levels = applyLevelUps(s);
+    const levelUp = levels ? { levels, level: s.level, life: s.life - lifeBefore, maxLife: s.maxLife - maxBefore, defense: s.defense - defBefore } : null;
     if (s.life <= 0) { s.over = true; s.won = false; }
     else if (s.day >= MAX_DAYS) { s.over = true; s.won = true; }
-    return { state: s, delta };
+    return { state: s, delta, levelUp };
   }
 
   /**
@@ -283,7 +315,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
-    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
@@ -332,7 +364,8 @@
     $("stat-defense").textContent = state.defense;
     $("stat-coins").textContent = state.coins;
     $("stat-coins").classList.toggle("negative", state.coins < 0);
-    $("stat-exp").textContent = state.exp;
+    $("stat-level").textContent = `Lv ${state.level}`;
+    $("stat-exp").textContent = `${state.exp} / ${expForLevel(state.level + 1)}`;
     renderShop();
   }
 
@@ -457,6 +490,13 @@
       el("p", { class: "question" }, ev.event),
       (() => { const c = el("p", { class: "changes" }); c.append(...colorize(changes)); return c; })(),
     ];
+    if (result.levelUp) {
+      const u = result.levelUp;
+      const up = `Level up! You reached Lv ${u.level}: Max life ${signed(u.maxLife)}, Defense ${signed(u.defense)}` + (u.life ? `, Life ${signed(u.life)}` : "");
+      const p = el("p", { class: "level-up" }); p.append("⭐ ", ...colorize(up));
+      nodes.push(p);
+      addLog("⭐ ", ...colorize(up));
+    }
 
     if (!state.over) {
       nodes.push(el("button", { class: "primary", onclick: askQuestion }, `Start Day ${state.day + 1}`));
@@ -467,7 +507,7 @@
   }
 
   function finalStats() {
-    return `Life ${state.life}/${state.maxLife}, Defense ${state.defense}, Coins ${state.coins}, EXP ${state.exp}`;
+    return `Lv ${state.level}, Life ${state.life}/${state.maxLife}, Defense ${state.defense}, Coins ${state.coins}, EXP ${state.exp}`;
   }
 
   function win() {

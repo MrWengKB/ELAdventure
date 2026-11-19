@@ -4,7 +4,7 @@ A small text adventure game that runs in the browser.
 
 ## Rules
 
-- Start: 100 life (max life 100), 10 defense, 200 coins, 0 EXP.
+- Start: 100 life (max life 100), 10 defense, 200 coins, 0 EXP, level 1.
 - To start each new day you must answer a random question correctly (`questions.csv`, multiple choice with 4 options in random order). A wrong answer shows the correct one and gives you a different question to try.
 - Penalty for wrong answers in a row (reset by a correct answer): 1 wrong, no penalty; 2 in a row, lose 10 coins; 3 in a row, lose 10 more life (not reduced by defense); 4 in a row, game over.
 - Each new day triggers a random event (`event.csv`). Its values are changes (plus or minus); `full` means life is fully restored; a blank counts as 0. An event is resolved in this order:
@@ -16,6 +16,7 @@ A small text adventure game that runs in the browser.
   - They also accept `double` or `half` (halving rounds odd numbers up). Doubled life never goes above max life, and halving life is not reduced by defense; when max life is doubled or halved, life follows rule 3 above; defense is simply doubled or halved. When defense is 0, `double` counts as +30; when coins are 0, `double` counts as +100. When coins are negative, `double` counts as `nodebt` and `half` has no effect.
   - `coins` also accepts `nodebt`: negative coins become 0 (debt cleared); otherwise it counts as +30.
 - Shop: buy at any time with coins. Defense +5 / +10 / +15 costs 100 / 180 / 270 coins; life +10 / +20 / +30 costs 100 / 180 / 270 coins. You can only buy while life is above 0, and you need enough coins (no buying on debt). Bought life never goes above max life, and you cannot buy life at full life.
+- Levels: you reach Lv2 at 30 total EXP, Lv3 at 60, Lv4 at 120, Lv5 at 210, Lv6 at 330... (from Lv2 on, each gap is 30 more than the previous one; formula: Lv L needs 30 + 15 × (L-1) × (L-2)). Reaching Lv N gives max life +N×10 (life follows max life rule 3 above) and defense +N×5, e.g. Lv2 +20 / +10, Lv3 +30 / +15; a big EXP gain can give several levels at once.
 - At 0 life you lose; survive all 30 days with life above 0 and you win. Winning or losing shows a popup that you close yourself or dismiss with "Play Again".
 - Event chains: the `next` column in `event.csv` holds the SN of a follow-up event. After this event happens, the follow-up event always happens the next day; 0 means no follow-up and the next day is random as usual. The `prev` column holds the SN of the event before it: 0 means the event can be drawn at random; any other value means it only happens through a chain and is never drawn on its own. For example, with 32 → 33 and 33 → 34 (33 has prev 32, 34 has prev 33), the events happen in the order 32, 33, 34.
 
