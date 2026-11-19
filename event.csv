@@ -39,3 +39,5 @@ SN,event,life,coins,exp,defense,maxlife,prev,next,linkcount
 38,"You follow the winding mountain path and finally see the demon king. Without a word, he brings a huge hammer crashing down on you.",half,0,0,half,-30,37,39,0
 39,"Summoning your courage, you leap high into the air and drive your sword straight into the demon king's left eye.",0,0,20,0,0,38,40,0
 40,"The demon king thrashes in agony, loses his footing and plunges into the valley, never to return.",0,0,double,0,0,39,0,0
+41,"You enter a cave and see mysterious symbols painted on the walls. In a flash of inspiration, you realize they are the secrets of a powerful magic.",0,0,full,0,0,0,0,0
+42,"You enter a cave and see mysterious symbols painted on the walls. Suddenly, to your horror, you realize they are an evil curse.",0,0,full,half,half,0,0,0
