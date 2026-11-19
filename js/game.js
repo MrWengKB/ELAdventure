@@ -173,9 +173,9 @@
     } else if (setTarget(event.coins) !== null) s.coins = capTo(s.coins, event.coins);
     else s.coins += num(event.coins);
     const expRaw = String(event.exp ?? "").trim().toLowerCase();
-    // full: EXP is topped up to the next level (one level up); double: EXP doubles
+    // full: EXP is topped up to the next level (one level up); double: EXP doubles (+5 at 0) but stops at the next level (reaching the threshold counts as full)
     if (expRaw === "full") s.exp = Math.max(s.exp, expForLevel((s.level || 1) + 1));
-    else if (expRaw === "double") s.exp = s.exp === 0 ? 5 : s.exp * 2;
+    else if (expRaw === "double") s.exp = Math.min(s.exp === 0 ? 5 : s.exp * 2, Math.max(s.exp, expForLevel((s.level || 1) + 1)));
     else s.exp += Math.max(0, num(event.exp));
     const maxOp = special(event.maxlife);
     if (maxOp === "double") changeMaxLife(s, s.maxLife);
