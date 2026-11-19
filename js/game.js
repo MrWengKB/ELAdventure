@@ -138,8 +138,8 @@
    * A life set is not reduced by defense; a max life set adjusts life using the changeMaxLife rules.
    * They also accept double / half (halving rounds odd numbers up):
    * - life: doubling never goes above max life; halving is not reduced by defense
-   * - maxlife: adjusts life using the changeMaxLife rules; defense: simply doubled / halved
-   * - coins: when negative, double counts as nodebt and half has no effect
+   * - maxlife: adjusts life using the changeMaxLife rules; defense: simply doubled / halved; double at 0 counts as +30
+   * - coins: when negative, double counts as nodebt and half has no effect; double at 0 counts as +100
    * coins also accept nodebt: negative coins become 0 (debt cleared); otherwise it counts as +30.
    */
   function applyEvent(state, event) {
@@ -168,7 +168,7 @@
       if (s.coins < 0) {
         if (coinOp !== "half") s.coins = 0; // nodebt / double: debt cleared
       } else if (coinOp === "nodebt") s.coins += 30;
-      else if (coinOp === "double") s.coins *= 2;
+      else if (coinOp === "double") s.coins = s.coins === 0 ? 100 : s.coins * 2;
       else s.coins = halve(s.coins);
     } else if (setTarget(event.coins) !== null) s.coins = capTo(s.coins, event.coins);
     else s.coins += num(event.coins);
@@ -179,7 +179,7 @@
     else if (setTarget(event.maxlife) !== null) changeMaxLife(s, capTo(s.maxLife, event.maxlife) - s.maxLife);
     else changeMaxLife(s, num(event.maxlife));
     const defOp = special(event.defense);
-    if (defOp === "double") s.defense *= 2;
+    if (defOp === "double") s.defense = s.defense === 0 ? 30 : s.defense * 2;
     else if (defOp === "half") s.defense = halve(s.defense);
     else if (setTarget(event.defense) !== null) s.defense = Math.max(0, capTo(s.defense, event.defense));
     else s.defense = Math.max(0, s.defense + num(event.defense));
