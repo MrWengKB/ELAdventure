@@ -281,6 +281,23 @@
    * Penalty for consecutive wrong answers (streak = wrong answers in a row, including this one):
    * 1: no penalty; 2: lose 10 coins; 3: lose 10 life (not reduced by defense); 4: game over.
    */
+  /**
+   * First-try bonus: when the day's question is answered correctly on the first try (no wrong answer before it),
+   * give one random reward (life / defense / coins / EXP), 1 to 5 points. Life cannot go above max life;
+   * EXP counts toward level-ups as usual (resolved together with the day's event).
+   */
+  const BONUS_TYPES = ["life", "defense", "coins", "exp"];
+  const BONUS_MIN = 1, BONUS_MAX = 5;
+
+  function firstTryBonus(state, rand = Math.random) {
+    const s = Object.assign({}, state);
+    const type = BONUS_TYPES[Math.floor(rand() * BONUS_TYPES.length)];
+    const amount = BONUS_MIN + Math.floor(rand() * (BONUS_MAX - BONUS_MIN + 1));
+    if (type === "life") s.life = Math.min(s.maxLife, s.life + amount);
+    else s[type] += amount;
+    return { state: s, type, amount, gained: s[type] - state[type] };
+  }
+
   function applyWrongAnswer(state, streak) {
     const s = Object.assign({}, state);
     let penalty = "";
@@ -378,7 +395,7 @@
 
   const Logic = {
     START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS, POISON_DAMAGE, POISON_DAYS, ANTIDOTE_DAYS,
-    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
+    parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, firstTryBonus, buyItem, shuffle, pickRandom,
   };
 
   if (typeof module !== "undefined" && module.exports) {
@@ -513,8 +530,19 @@
     });
 
     if (chosen === q.Answer) {
+      const firstTry = wrongStreak === 0;
       wrongStreak = 0;
       panel.appendChild(el("p", { class: "result-good" }, "Correct! A new day begins."));
+      if (firstTry) {
+        const b = firstTryBonus(state);
+        state = b.state;
+        renderStats();
+        const name = { life: "♥️Life", defense: "🛡️Defense", coins: "💰Coins", exp: "⭐EXP" }[b.type];
+        const msg = `🎁 First-try bonus: ${name} +${b.gained}` + (b.gained < b.amount ? " (life already full)" : "");
+        const bp = el("p", { class: "bonus" }); bp.append(...colorize(msg));
+        panel.appendChild(bp);
+        addLog(`Before day ${state.day + 1}: `, ...colorize(msg));
+      }
       panel.appendChild(el("button", { class: "primary", onclick: startDay }, "Continue"));
     } else {
       wrongStreak++;

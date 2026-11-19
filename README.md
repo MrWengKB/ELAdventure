@@ -6,6 +6,7 @@ A small text adventure game that runs in the browser.
 
 - Start: 100 life (max life 100), 10 defense, 200 coins, 0 EXP, level 1.
 - To start each new day you must answer a random question correctly (`questions.csv`, multiple choice with 4 options in random order). A wrong answer shows the correct one and gives you a different question to try.
+- First-try bonus: if you answer the day's question correctly on the first try (no wrong answer before it), you get one random reward: life, defense, coins or EXP, 1 to 5 points. Life cannot go above max life; EXP counts toward level-ups as usual. No bonus if you got a wrong answer first.
 - Penalty for wrong answers in a row (reset by a correct answer): 1 wrong, no penalty; 2 in a row, lose 10 coins; 3 in a row, lose 10 more life (not reduced by defense); 4 in a row, game over.
 - Each new day triggers a random event (`event.csv`). Its values are changes (plus or minus); `full` means life is fully restored; a blank counts as 0. An event is resolved in this order:
   1. Life: a negative value has your defense added to it, and that is the final damage (down to 0 at most, it never turns into healing). For example, -20 with 10 defense is -10. Healing never goes above the current max life.

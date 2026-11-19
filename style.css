@@ -249,3 +249,4 @@ a.btn:hover { background: #f3e8d8; }
   .stat .value { font-size: 0.95rem; white-space: nowrap; }
   .shop-item { font-size: 0.85rem; padding: 8px 4px; white-space: nowrap; }
 }
+.panel .bonus { color: var(--accent); font-weight: bold; }
