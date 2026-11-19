@@ -229,11 +229,11 @@
 
   /**
    * Poison: when an event's poisoned column is 1, you are poisoned starting the next day for 3 days:
-   * life -20 each day (defense does not block it). Poison stacks (two stacks = -40 a day).
+   * life -10 each day (defense does not block it). Poison stacks (two stacks = -20 a day).
    * Poison damage happens before every other effect of the day; if it brings life to 0,
    * you lose right away and that day's event does not happen.
    */
-  const POISON_DAMAGE = 20;
+  const POISON_DAMAGE = 10;
   const POISON_DAYS = 3;
 
   /** Start a new day: resolve poison first, then the event */
