@@ -463,15 +463,15 @@
       state = r.state;
       if (item.type === "antidote") {
         const held = state.antidotes.length;
-        const what = r.cured ? "Antidote cured the poison" : `Antidote +1 (blocks poison for the next ${ANTIDOTE_DAYS} days)`;
-        shopMsg = `Bought: ${what} for ${item.price} coins.` + (held ? ` Antidotes held: ${held}.` : "");
-        addLog(`Shop: ${what} (-${item.price} coins)` + (held ? `, Antidotes held: ${held}` : ""));
+        const what = r.cured ? "💊 cured the poison" : `💊 +1 (blocks poison for the next ${ANTIDOTE_DAYS} days)`;
+        shopMsg = `Bought: ${what}, 💰 -${item.price}` + (held ? `, 💊 held: ${held}` : "");
+        addLog(...colorize(`Shop: ${what}, 💰 -${item.price}` + (held ? `, 💊 held: ${held}` : "")));
         renderStats();
         return;
       }
-      const what = item.type === "defense" ? "Defense" : "Life";
-      shopMsg = `Bought: ${what} +${r.gained} for ${item.price} coins.`;
-      addLog(`Shop: ${what} +${r.gained} (-${item.price} coins)`);
+      const what = item.type === "defense" ? "🛡️" : "♥️";
+      shopMsg = `Bought: ${what} +${r.gained}, 💰 -${item.price}`;
+      addLog(...colorize(`Shop: ${what} +${r.gained}, 💰 -${item.price}`));
     }
     renderStats();
   }
