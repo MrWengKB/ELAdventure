@@ -83,6 +83,7 @@
     return {
       day: 0, life: START_MAX_LIFE, maxLife: START_MAX_LIFE, defense: START_DEFENSE,
       coins: START_COINS, exp: 0, level: 1, over: false, won: false,
+      poison: [], // days left for each poison stack
     };
   }
 
@@ -226,15 +227,36 @@
     return gained;
   }
 
-  /** Start a new day and resolve its event */
+  /**
+   * Poison: when an event's poisoned column is 1, you are poisoned starting the next day for 3 days:
+   * life -20 each day (defense does not block it). Poison stacks (two stacks = -40 a day).
+   * Poison damage happens before every other effect of the day; if it brings life to 0,
+   * you lose right away and that day's event does not happen.
+   */
+  const POISON_DAMAGE = 20;
+  const POISON_DAYS = 3;
+
+  /** Start a new day: resolve poison first, then the event */
   function advanceDay(state, event) {
-    const { state: s, delta } = applyEvent(Object.assign({}, state, { day: state.day + 1 }), event);
+    const start = Object.assign({}, state, { day: state.day + 1 });
+    const stacks = state.poison || [];
+    const poisonDamage = Math.min(start.life, POISON_DAMAGE * stacks.length);
+    start.life -= poisonDamage;
+    start.poison = stacks.map(n => n - 1).filter(n => n > 0);
+    if (stacks.length && start.life <= 0) {
+      start.over = true; start.won = false;
+      const zero = { life: 0, maxLife: 0, defense: 0, coins: 0, exp: 0, blocked: 0 };
+      return { state: start, delta: zero, levelUp: null, poisonDamage, poisonDeath: true, poisoned: false };
+    }
+    const { state: s, delta } = applyEvent(start, event);
+    const poisoned = num(event.poisoned) === 1;
+    if (poisoned) s.poison = s.poison.concat(POISON_DAYS);
     const lifeBefore = s.life, maxBefore = s.maxLife, defBefore = s.defense;
     const levels = s.life > 0 ? applyLevelUps(s) : 0;
     const levelUp = levels ? { levels, level: s.level, life: s.life - lifeBefore, maxLife: s.maxLife - maxBefore, defense: s.defense - defBefore } : null;
     if (s.life <= 0) { s.over = true; s.won = false; }
     else if (s.day >= MAX_DAYS) { s.over = true; s.won = true; }
-    return { state: s, delta, levelUp };
+    return { state: s, delta, levelUp, poisonDamage, poisonDeath: false, poisoned };
   }
 
   /**
@@ -327,7 +349,7 @@
   }
 
   const Logic = {
-    START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS,
+    START_MAX_LIFE, START_DEFENSE, START_COINS, MAX_DAYS, SHOP_ITEMS, POISON_DAMAGE, POISON_DAYS,
     parseCSV, parseRows, parseQuestions, decodeText, createState, setTarget, special, applyEvent, findEvent, randomPool, changeMaxLife, expForLevel, levelForExp, applyLevelUps, advanceDay, applyWrongAnswer, buyItem, shuffle, pickRandom,
   };
 
@@ -488,13 +510,24 @@
     renderStats();
 
     const d = result.delta;
+    if (result.poisonDeath) {
+      const msg = `Poison: Life ${signed(-result.poisonDamage)}`;
+      addLog(`Day ${state.day}: `, ...colorize(msg));
+      const c = el("p", { class: "changes" }); c.append("☠️ ", ...colorize(msg));
+      panel.replaceChildren(el("p", null, `Day ${state.day}`), c);
+      lose("The poison killed you... ");
+      return;
+    }
     const lifeLabel = { full: "Life fully restored", double: "Life doubled", half: "Life halved" }[String(ev.life).trim().toLowerCase()];
     const lifeText = lifeLabel ? `${lifeLabel} (${signed(d.life)})` : `Life ${signed(d.life)}`;
-    const parts = [lifeText];
+    const parts = [];
+    if (result.poisonDamage) parts.push(`Poison ${signed(-result.poisonDamage)}`);
+    parts.push(lifeText);
     if (d.blocked > 0) parts.push(`Defense blocked ${d.blocked} damage`);
     parts.push(`Coins ${signed(d.coins)}`, `EXP ${signed(d.exp)}`);
     if (d.maxLife) parts.push(`Max life ${signed(d.maxLife)}`);
     if (d.defense) parts.push(`Defense ${signed(d.defense)}`);
+    if (result.poisoned) parts.push(`Poisoned! Life -${POISON_DAMAGE} each day for the next ${POISON_DAYS} days`);
     const changes = parts.join(", ");
     addLog(`Day ${state.day}: ${ev.event} (`, ...colorize(changes), ")");
 
