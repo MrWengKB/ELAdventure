@@ -438,7 +438,7 @@
 
   function itemLabel(item) {
     if (item.type === "antidote") return `💊Antidote x1 (${item.price} 💰, 1 per day)`;
-    return `${item.type === "defense" ? "🛡️" : "Life"} +${item.amount} (${item.price} 💰)`;
+    return `${item.type === "defense" ? "🛡️" : "♥️"} +${item.amount} (${item.price} 💰)`;
   }
 
   function renderShop() {
