@@ -72,7 +72,7 @@ button {
   color: var(--text);
   text-align: left;
 }
-button:hover:not(:disabled) { background: #f3e8d8; }
+@media (hover: hover) { button:hover:not(:disabled) { background: #f3e8d8; } }
 button:disabled { cursor: default; opacity: 0.7; }
 button.correct { border-color: var(--good); background: #e8f5e9; }
 button.wrong { border-color: var(--bad); background: #ffebee; }
@@ -83,7 +83,7 @@ button.primary {
   text-align: center;
   min-width: 160px;
 }
-button.primary:hover { background: #6f4720; }
+@media (hover: hover) { button.primary:hover { background: #6f4720; } }
 
 .log-wrap {
   background: var(--card);
@@ -231,7 +231,7 @@ a.btn {
   font: inherit; border-radius: 8px; border: 1px solid var(--accent); padding: 10px 14px;
   background: #fff; color: var(--text); text-decoration: none; display: inline-block;
 }
-a.btn:hover { background: #f3e8d8; }
+@media (hover: hover) { a.btn:hover { background: #f3e8d8; } }
 .hw-qr { width: 240px; max-width: 100%; height: auto; align-self: center; border-radius: 10px; image-rendering: pixelated; border: 1px solid var(--border); }
 .num-pos { color: var(--good); font-weight: bold; }
 .num-neg { color: var(--bad); font-weight: bold; }
